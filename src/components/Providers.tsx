@@ -31,40 +31,17 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
   const auth = getAuth(app);
   const storage = getStorage(app);
   const functions = getFunctions(app, "europe-west1");
+  const analytics = getAnalytics(app);
 
   return (
     <AuthProvider sdk={auth}>
       <FirestoreProvider sdk={db}>
         <StorageProvider sdk={storage}>
-          <FunctionsProvider sdk={functions}>{children}</FunctionsProvider>
+          <FunctionsProvider sdk={functions}>
+            <AnalyticsProvider sdk={analytics}>{children}</AnalyticsProvider>
+          </FunctionsProvider>
         </StorageProvider>
       </FirestoreProvider>
     </AuthProvider>
-  );
-}
-
-function FirebaseAnalyticsWrapper({
-  children,
-  app,
-}: {
-  children: ReactNode;
-  app: FirebaseApp;
-}) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  return (
-    <>
-      {isClient ? (
-        <AnalyticsProvider sdk={getAnalytics(app)}>
-          {children}
-        </AnalyticsProvider>
-      ) : (
-        <>{children}</>
-      )}
-    </>
   );
 }
