@@ -1,3 +1,48 @@
+import { Inter } from 'next/font/google';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+const inter = Inter({ subsets: ['latin'] });
+
 export function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  const { pathname } = useRouter();
+
+  return (
+    <main className={inter.className}>
+      <div className="navbar bg-base-100">
+        <div className="flex-1 gap-4">
+          {['Dashboard', 'Input', 'Chat'].map((item) => (
+            <Link
+              key={item}
+              className={`btn btn-ghost normal-case text-xl ${
+                pathname === `/${item.toLowerCase()}` ? 'btn-active' : ''
+              }`}
+              href={`/${item.toLowerCase()}`}
+            >
+              {item}
+            </Link>
+          ))}
+        </div>
+        <div className="flex-none">
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-square btn-ghost">
+              <svg fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                ></path>
+              </svg>
+            </label>
+            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li>
+                <a>Log out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="m-5">{children}</div>
+    </main>
+  );
 }
