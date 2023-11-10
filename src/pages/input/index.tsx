@@ -21,6 +21,16 @@ function Input() {
         <p>Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context.</p>
       </header>
 
+
+      <input type="range" min={1} max="5" value="2" className="range range-error" step="1" />
+      <div className="w-full flex justify-between text-xs px-2">
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+      </div>
+
       {loading ? (
         <span className="loading loading-spinner loading-lg" />
       ) : (
