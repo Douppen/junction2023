@@ -1,5 +1,4 @@
 import { signOut } from 'firebase/auth';
-import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth, useSigninCheck } from 'reactfire';
@@ -25,7 +24,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </div>
-        <div>{signinCheck.data?.signedIn ? <p>Signed in: {signinCheck.data.user.email}</p> : <p>Not signed in</p>}</div>
         <div className="flex-none">
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-square btn-ghost">
@@ -39,8 +37,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </svg>
             </label>
             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <span className="m-3">
+                Signed in as:
+                <br />
+                {signinCheck.data.user?.displayName}
+              </span>
               <li>
-                <button onClick={() => signOut(auth)}>Log out</button>
+                <button className="btn btn-sm" onClick={() => signOut(auth)}>
+                  Log out
+                </button>
               </li>
             </ul>
           </div>
