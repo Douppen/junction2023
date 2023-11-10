@@ -1,6 +1,7 @@
 import { useUserDocument } from '@/lib/store';
 import { useEffect, useState } from 'react';
 
+
 function Input() {
   const { data, status, set } = useUserDocument('SpgDdCaYeUSU6Nt9MzlW');
   const [value, setValue] = useState('');
@@ -13,6 +14,13 @@ function Input() {
 
   return (
     <div className="flex flex-col items-center">
+
+      <header>
+        <h1>How have you been feeling recently?</h1>
+        <p>Describe your recent pain level to track your progress.</p>
+        <p>Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context.</p>
+      </header>
+
       {loading ? (
         <span className="loading loading-spinner loading-lg" />
       ) : (
