@@ -5,12 +5,16 @@ import { useEffect, useState } from 'react';
 function Input() {
   const { data, status, set } = useUserDocument('SpgDdCaYeUSU6Nt9MzlW');
   const [value, setValue] = useState('');
+  const [painLevel, setPainLevel] = useState(1);
 
   useEffect(() => {
     status === 'success' && setValue(data?.test);
   }, [data, status]);
 
   const loading = status === 'loading';
+  const updateSliderValue = (newValue: React.ChangeEvent<HTMLInputElement>) => {
+    setPainLevel(parseInt(newValue.target.value));
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -22,7 +26,7 @@ function Input() {
       </header>
 
 
-      <input type="range" min={1} max="5" value="2" className="range range-error" step="1" />
+      <input type="range" min={1} max="5" value={painLevel} onChange={updateSliderValue} className="range range-error" step="1"/>
       <div className="w-full flex justify-between text-xs px-2">
         <span>|</span>
         <span>|</span>
