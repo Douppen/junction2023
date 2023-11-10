@@ -1,9 +1,9 @@
 import { firebaseConfig } from '@/lib/firebase';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth'; // Firebase v9+
+import { connectAuthEmulator, getAuth } from 'firebase/auth'; // Firebase v9+
 import { getFirestore } from 'firebase/firestore'; // Firebase v9+
-import { getFunctions } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 import { ReactNode, useEffect, useState } from 'react';
 
@@ -32,6 +32,9 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
   const storage = getStorage(app);
   const functions = getFunctions(app, 'europe-west1');
   const analytics = getAnalytics(app);
+
+  connectFunctionsEmulator(functions, 'localhost', 5001);
+  connectAuthEmulator(auth, 'http://localhost:9099');
 
   return (
     <AuthProvider sdk={auth}>
