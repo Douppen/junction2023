@@ -48,7 +48,38 @@ const graphData: painLevelData[] = [
     painLevel: 2,
     date: new Date('2023-11-12T13:30:00Z'),
   },
-  // Add more data as needed
+    {
+    painLevel: 3,
+    date: new Date('2023-11-13T09:45:00Z'),
+  },
+  {
+    painLevel: 1,
+    date: new Date('2023-11-14T10:55:00Z'),
+  },
+  {
+    painLevel: 4,
+    date: new Date('2023-11-15T08:20:00Z'),
+  },
+  {
+    painLevel: 2,
+    date: new Date('2023-11-16T11:10:00Z'),
+  },
+  {
+    painLevel: 5,
+    date: new Date('2023-11-17T14:30:00Z'),
+  },
+  {
+    painLevel: 1,
+    date: new Date('2023-11-18T07:40:00Z'),
+  },
+  {
+    painLevel: 3,
+    date: new Date('2023-11-19T13:00:00Z'),
+  },
+  {
+    painLevel: 4,
+    date: new Date('2023-11-20T10:25:00Z'),
+  }
 ];
 
 const avgPainLevel = (data: painLevelData[]): number => {
@@ -72,10 +103,11 @@ const preProcess = (data: painLevelData[]) => {
 function PainChart() {
   // TODO: fetch real data here
   const preProcessed = preProcess(graphData).slice(-7);
+
   return (
     // FIXME: Proper theming
     // FIXME: Scale the chart based on viewport width
-    <div style={{ backgroundColor: 'white' }}>
+    <>
       <BarChart
         xAxis={[
           {
@@ -87,13 +119,13 @@ function PainChart() {
         series={[
           {
             data: preProcessed.map((d) => d.pain),
-            label: 'Average pain',
+            label: 'Average pain level',
           },
         ]}
-        width={500}
-        height={300}
+        width={720}
+        height={480}
       />
-    </div>
+    </>
   );
 }
 
