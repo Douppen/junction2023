@@ -1,3 +1,4 @@
+import { AuthWrapper } from '@/components/AuthWrapper';
 import { Layout } from '@/components/Layout';
 import { Providers } from '@/components/Providers';
 import '@/styles/globals.css';
@@ -17,11 +18,16 @@ function SafeHydrate({ children }: { children: React.ReactNode }) {
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <SafeHydrate>
-      <Providers>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </Providers>
+      {/* base styles here */}
+      <div className="antialiased">
+        <Providers>
+          <AuthWrapper>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </AuthWrapper>
+        </Providers>
+      </div>
     </SafeHydrate>
   );
 }

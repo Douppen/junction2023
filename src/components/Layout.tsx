@@ -1,13 +1,16 @@
+import { signOut } from 'firebase/auth';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-const inter = Inter({ subsets: ['latin'] });
+import { useAuth, useSigninCheck } from 'reactfire';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useRouter();
+  const signinCheck = useSigninCheck();
+  const auth = useAuth();
 
   return (
-    <main className={inter.className}>
+    <main>
       <div className="navbar bg-base-100">
         <div className="flex-1 gap-4">
           {['Dashboard', 'Input', 'Chat'].map((item) => (
@@ -22,6 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </div>
+        <div>{signinCheck.data?.signedIn ? <p>Signed in: {signinCheck.data.user.email}</p> : <p>Not signed in</p>}</div>
         <div className="flex-none">
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-square btn-ghost">
@@ -36,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </label>
             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
               <li>
-                <a>Log out</a>
+                <button onClick={() => signOut(auth)}>Log out</button>
               </li>
             </ul>
           </div>
