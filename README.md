@@ -6,25 +6,41 @@ After cloning the repo, install dependencies:
 npm install
 ```
 
-Install the Firebase CLI:
+Then if you haven't already, install the Firebase CLI globally on your machine:
 
 ```bash
 npm install -g firebase-tools
 ```
 
-Login to Firebase:
+Login to Firebase if you haven't already:
 
 ```bash
 firebase login
 ```
 
-Run the development server:
+Running the development server is a bit more complex since we need to spin up an instance of the database, auth service, and functions service locally.
+You cannot just run `npm run dev`.
+Instead you need to start Firebase emulators using the following command in the root of the repo:
 
 ```bash
-npm run dev
+firebase emulators:start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If prompted, run the following command before the one above:
+
+```bash
+firebase experiments:enable webframeworks
+```
+
+This will start the Firebase emulators for the database, auth, and functions services.
+You should be able to view the frontend locally on **port 3009** and the Firebase emulators UI on **port 4000**.
+The **Firebase Emulators UI** can be used to create mock users locally, watch function logs, and change data in the database, all locally.
+
+**Important**: if you are developing Firebase functions, and want them to automatically reload when you make changes in dev, you need to cd into the functions directory in a separate terminal window and run `npm run build:watch`. This will compile the Typescript functions into Javascript and watch for changes.
+
+For more info on using Firebase Emulators, see the docs: [https://firebase.google.com/docs/emulator-suite](https://firebase.google.com/docs/emulator-suite)
+
+So, you should have one terminal process running `firebase emulators:start` in the root of the repo and another terminal process running `npm run build:watch` in /functions.
 
 ## Info
 

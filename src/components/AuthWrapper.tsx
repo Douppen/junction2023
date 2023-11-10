@@ -1,6 +1,5 @@
 import { useSigninCheck } from 'reactfire';
 import { Login } from './Login';
-import { redirect } from 'next/navigation';
 import { useRouter } from 'next/router';
 
 export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
