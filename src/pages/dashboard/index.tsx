@@ -1,6 +1,7 @@
 import { httpsCallable } from 'firebase/functions';
 import Link from 'next/link';
 import { useFunctions } from 'reactfire';
+import PainChart from '@/components/Painchart';
 
 function Dashboard() {
   const functions = useFunctions();
@@ -12,6 +13,7 @@ function Dashboard() {
         <button className="btn btn-lg btn-primary my-40">Add entry</button>
       </Link>
       <button onClick={() => helloWorld({ text: 'hellooo' })}>Hello world</button>
+      <PainChart />
     </div>
   );
 }

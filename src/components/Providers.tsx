@@ -34,7 +34,6 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
   const analytics = getAnalytics(app);
 
   connectFunctionsEmulator(functions, 'localhost', 5001);
-  connectAuthEmulator(auth, 'http://localhost:9099');
 
   return (
     <AuthProvider sdk={auth}>
