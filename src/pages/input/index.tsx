@@ -20,9 +20,9 @@ function Input() {
     <div className="flex flex-col items-center">
 
       <header>
-        <h1>How have you been feeling recently?</h1>
-        <p>Describe your recent pain level to track your progress.</p>
-        <p>Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context.</p>
+        <h1 style={{fontSize: '40px', fontWeight: 'bold', marginBottom: '20px'}}>How have you been feeling recently?</h1>
+        <p style={{fontSize: '24px', marginBottom: '2px'}}>Describe your recent pain level to track your progress.</p>
+        <p style={{fontSize: '24px', marginBottom: '30px'}}>Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context in the text box.</p>
       </header>
 
 
@@ -39,7 +39,7 @@ function Input() {
         <span className="loading loading-spinner loading-lg" />
       ) : (
         <textarea
-          className="textarea textarea-bordered w-full max-w-[500px] h-[200px] my-40"
+          className="textarea textarea-bordered w-full max-w-[500px] h-[200px] my-10"
           placeholder="Test"
           value={value}
           onChange={(e) => setValue(e.target.value)}
