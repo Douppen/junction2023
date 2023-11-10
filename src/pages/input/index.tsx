@@ -1,4 +1,5 @@
 import { useUserDocument } from '@/lib/store';
+import { StringFormat } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 
 
@@ -45,7 +46,7 @@ function Input() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              set({ test: value });
+              set({ test: value, painLevel });
             }
           }}
         />
