@@ -1,11 +1,11 @@
-import { firebaseConfig } from "@/lib/firebase";
-import { getAnalytics, isSupported } from "firebase/analytics";
-import { FirebaseApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // Firebase v9+
-import { getFirestore } from "firebase/firestore"; // Firebase v9+
-import { getFunctions } from "firebase/functions";
-import { getStorage } from "firebase/storage";
-import { ReactNode, useEffect, useState } from "react";
+import { firebaseConfig } from '@/lib/firebase';
+import { getAnalytics, isSupported } from 'firebase/analytics';
+import { FirebaseApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth'; // Firebase v9+
+import { getFirestore } from 'firebase/firestore'; // Firebase v9+
+import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
+import { ReactNode, useEffect, useState } from 'react';
 
 import {
   FirebaseAppProvider,
@@ -15,7 +15,7 @@ import {
   AnalyticsProvider,
   StorageProvider,
   FunctionsProvider,
-} from "reactfire";
+} from 'reactfire';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -30,7 +30,7 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
   const db = getFirestore(app);
   const auth = getAuth(app);
   const storage = getStorage(app);
-  const functions = getFunctions(app, "europe-west1");
+  const functions = getFunctions(app, 'europe-west1');
   const analytics = getAnalytics(app);
 
   return (

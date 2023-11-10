@@ -1,7 +1,7 @@
-import { Providers } from "@/components/Providers";
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { useEffect, useState } from "react";
+import { Providers } from '@/components/Providers';
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import { useEffect, useState } from 'react';
 
 function SafeHydrate({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
