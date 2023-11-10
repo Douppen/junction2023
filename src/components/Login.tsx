@@ -1,6 +1,7 @@
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
-import { useAuth, useSigninCheck } from 'reactfire';
+import { useAuth, useFirestore, useSigninCheck } from 'reactfire';
 
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
@@ -9,10 +10,24 @@ export const Login = () => {
   const auth = useAuth();
   const router = useRouter();
   const signInCheck = useSigninCheck();
+  const db = useFirestore();
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+
+        const data = {
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          uid: user.uid,
+          provider: credential?.providerId,
+        };
+
+        await setDoc(doc(db, 'users', user.uid), data);
+
         router.push('/');
       })
       .catch((error) => {});
