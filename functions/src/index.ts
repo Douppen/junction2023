@@ -50,15 +50,37 @@ export const CreateGeneralAssistant= onCall(async (req) => {
         type: "function",
         function : 
         {
-          "name": "get_one_improvement",
-          "description": "Get based on the user input one improvement the user could make when it comes to pain managment",
+          "name": "get_listoff_improvements",
+          "description": "Get a list of improvements the user could make to decrease their pain",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "commands": {
+                type: "array",
+                items: {
+                  type: "string",
+                  description: "An improvement the user could make"
+                },
+                description: "List of improvements the user could make"
+              }
+              },
+              required: ["commands"]
+           }
+        }
+      },
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_one_success",
+          "description": "Get based on the user input one thing that the user is doing which they should continue doing to help with pain relief",
           "parameters": {
             "type": "object",
             "properties": {
               },
            }
         }
-      }
+      },
     ],
     model: "gpt-4-1106-preview",
   });
