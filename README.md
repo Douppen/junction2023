@@ -1,6 +1,10 @@
 # Restorative 
-*Junction 2023*
+*This project was developed for Junction 2023*
+As stated in the challenge the goal was to develop a digital solution to enchane chronic pain managment while reducing risks of opiod missuse. The solution should prioritze non-phramacological approaches.
+From the hackerpack we also decided to use the [46elks](https://46elks.com/) API
 ## Description
+
+### Technical implementation
 
 
 ## Online Deployment 
