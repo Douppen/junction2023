@@ -50,12 +50,56 @@ export const CreateGeneralAssistant= onCall(async (req) => {
         type: "function",
         function : 
         {
-          "name": "get_one_improvement",
-          "description": "Get based on the user input one improvement the user could make when it comes to pain managment",
+          "name": "get_listoff_improvements",
+          "description": "Get a list of improvements the user could make to decrease their pain",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "commands": {
+                type: "array",
+                items: {
+                  type: "string",
+                  description: "An improvement the user could make"
+                },
+                description: "List of improvements the user could make"
+              }
+              },
+              required: ["commands"]
+           }
+        }
+      },
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_one_success",
+          "description": "Get based on the user input one thing that the user is doing which they should continue doing to help with pain relief",
           "parameters": {
             "type": "object",
             "properties": {
               },
+           }
+        }
+      },
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_similar_activities",
+          "description": "Get a list of activities that is similar to what the user previously has enjoyed",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "commands": {
+                type: "array",
+                items: {
+                  type: "string",
+                  description: "An activity the user would enjoy"
+                },
+                description: "List of activities the user would enjoy"
+              }
+              },
+              required: ["commands"]
            }
         }
       }
@@ -128,13 +172,16 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   const messages = await openai.beta.threads.messages.list(thread.id);
-  const content = messages.data[0].content;
+
+  const content = messages.data[0].content[0].text.value;
+
+  const parsed = content.replaceAll('`', '').replaceAll('\n', '').replaceAll('json', '');
 
   let json = {};
   try {
-    json = JSON.parse(content);
+    json = JSON.parse(parsed);
   } catch (error) {
-    json = { error: true, raw: content };
+    json = { error: true, raw: parsed };
   }
 
   return json;
@@ -161,7 +208,7 @@ export const OpenAIAddmessagetoBigAssistant = onCall(async (req) => {
 });
 
 // Reduce the bill :))
-const MAX_CONCURRENT = 3
+const MAX_CONCURRENT = 3;
 
 export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
   const db = getFirestore();
@@ -195,9 +242,11 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
           .then((json) => console.log(json))
           .catch((err) => console.log(err));
       }
-    }), MAX_CONCURRENT);
+    }),
+    MAX_CONCURRENT
+  );
 
-    pool.start().then(() => console.log("All reminders sent"))
+  pool.start().then(() => console.log('All reminders sent'));
 });
 
 // We create a new GPT assistant thread for the user and pass it some data
