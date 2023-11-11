@@ -35,6 +35,22 @@ export const helloWorld = onCall((req) => {
   return 'Hello from Firebase!' + text;
 });
 
+export const CreateGeneralAssistant= onCall(async (req) => {
+  const openai = new OpenAI({ apiKey: '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' });
+  const assistant= await openai.beta.assistants.create({
+    name: "Pain Assitant",
+    description: `
+    You should help me with incrementally improving my chronic pain. 
+    I would like to get better through novel activities and not have to rely on my pain medication as much.
+    I will continuously give you daily updates on my pain level, its location, what I did that day, how active I was, if I tried any therapies, what my diet was like, etc.
+    The daily updates will be inputted as a json file with variables: (activity_of_the_user, body_part, vital_information, trigger) 
+    You should be my assistant helping me to get better, and as I give you more information every day, you should be able to help me more and more. `,
+    model: "gpt-4-1106-preview",
+  }
+  )
+  return assistant.id
+})
+
 export const OpenAIcompletions = onCall(async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
