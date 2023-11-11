@@ -64,16 +64,16 @@ const graphData: painLevelData[] = [
     date: new Date('2023-11-15T08:20:00Z'),
   },
   {
+    painLevel: 1,
+    date: new Date('2023-11-15T08:20:00Z'),
+  },
+  {
     painLevel: 2,
     date: new Date('2023-11-16T11:10:00Z'),
   },
   {
     painLevel: 5,
     date: new Date('2023-11-17T14:30:00Z'),
-  },
-  {
-    painLevel: 1,
-    date: new Date('2023-11-18T07:40:00Z'),
   },
   {
     painLevel: 3,
@@ -99,8 +99,23 @@ const preProcess = (data: painLevelData[]) => {
     .map(([_key, values]) => {
       return { date: values[0].date, pain: avgPainLevel(values) };
     })
+
+  // Add 0 for days with no data
+  const tempNow = _.minBy(dayAndAverage, (d) => d.date)
+  const tempLast = _.maxBy(dayAndAverage, (d) => d.date)
+
+  if (tempNow && tempLast) {
+    let now = {...tempNow, date: new Date(tempNow.date)}
+    const last = {...tempLast}
+    while (now.date.toDateString() != last.date?.toDateString()) {
+      if (!dayAndAverage.find((d) => d.date.toDateString() == now.date.toDateString())) {
+        dayAndAverage.push({date: new Date(now.date), pain: 0})
+      }
+      now.date.setDate(now.date.getDate()+1)
+    }
+  }
+  return dayAndAverage
     .sort((a, b) => a.date.getTime() - b.date.getTime());
-  return dayAndAverage;
 };
 
 function PainChart() {
