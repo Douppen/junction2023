@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useAuth, useFirestore, useUser } from 'reactfire';
+import { useAuth, useFirestore, useFunctions, useUser } from 'reactfire';
 import PainChart from '@/components/Painchart';
 import { AnimateUp } from '@/components/AnimateUp';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,12 +11,9 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { httpsCallable } from 'firebase/functions';
 
 function Dashboard() {
-  const auth = useAuth();
-
-  const displayName = auth.currentUser?.displayName;
-
   return (
     <AnimateUp className="">
       <div className="grid grid-cols-[1fr_auto]">
@@ -39,6 +36,7 @@ export default Dashboard;
 
 const InputForm = () => {
   const auth = useAuth();
+  const addPainInput = httpsCallable(useFunctions(), 'addPainInput');
 
   const displayName = auth.currentUser?.displayName;
 
@@ -55,8 +53,6 @@ const InputForm = () => {
     },
   });
 
-  const db = useFirestore();
-  const user = useUser();
   const [currentInputIndex, setCurrentInputIndex] = useState<number>(0);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -66,7 +62,7 @@ const InputForm = () => {
 
   const [formData, setFormData] = useState({
     text: '',
-    ageYears: '',
+    painLevel: '',
   });
 
   const handleStepSubmit = async (data: z.infer<typeof schema>) => {
@@ -99,7 +95,12 @@ const InputForm = () => {
         form.setError('painLevel', { message: 'Please enter a number between 0 and 10' });
         return;
       }
+
+      // @ts-expect-error
+      data.painLevel = parsedInt;
     }
+
+    console.log(data);
 
     // Update formData with new values
     setFormData((prevFormData) => ({ ...prevFormData, ...data }));
@@ -108,21 +109,25 @@ const InputForm = () => {
     if (currentInputIndex < inputs.length - 1) {
       setCurrentInputIndex(currentInputIndex + 1);
     } else {
-      const ref = doc(db, 'users', user.data!.uid);
       try {
         setCurrentInputIndex(-1);
-        const delayPromise = new Promise((resolve) => setTimeout(resolve, 1800));
-
-        toast.promise(delayPromise, {
-          loading: 'Recording your log...',
-          success: 'Done!',
-        });
+        const delayPromise = new Promise((resolve) => setTimeout(resolve, 1000));
 
         delayPromise.then(() => {
-          form.reset();
-          setHasSubmitted(true);
-          setCurrentInputIndex(0);
+          addPainInput({
+            description: data.text,
+            painLevel: data.painLevel,
+          }).then(() => {
+            form.reset();
+            setHasSubmitted(true);
+            setCurrentInputIndex(0);
+          });
         });
+
+        // toast.promise(delayPromise, {
+        //   loading: 'Recording your log...',
+        //   success: 'Done!',
+        // });
       } catch (e) {
         toast.error('Something went wrong, please try again');
       }
@@ -163,7 +168,27 @@ const InputForm = () => {
         form.setFocus(inputs[currentInputIndex]?.name);
       }}
     >
-      <div className="px-4 md:px-12">
+      <div className="px-4 md:px-12 -mt-8">
+        <span className="isolate inline-flex rounded-full shadow-sm mb-5">
+          <button
+            type="button"
+            className="relative inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+          >
+            Years
+          </button>
+          <button
+            type="button"
+            className="relative -ml-px inline-flex items-center bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+          >
+            Months
+          </button>
+          <button
+            type="button"
+            className="relative -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+          >
+            Days
+          </button>
+        </span>
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {inputs.map((input, index) => {

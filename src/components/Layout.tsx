@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {!isMobile && (
             <div className="w-full flex justify-center">
               <div className="flex items-center gap-7">
-                {['Dashboard', 'Input', 'Chat', 'About'].map((item) => pageLink(item))}
+                {['Dashboard', 'Chat', 'About'].map((item) => pageLink(item))}
               </div>
             </div>
           )}
@@ -66,7 +66,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   )}
                 </label>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                  {isMobile && ['Dashboard', 'Input', 'Chat', 'About'].map(pageLink)}
+                  {isMobile && ['Dashboard', 'Chat', 'About'].map(pageLink)}
                   <span className="m-3">
                     Signed in as:
                     <br />
