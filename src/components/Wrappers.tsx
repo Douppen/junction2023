@@ -5,6 +5,7 @@ import { UserDocData } from '@/types';
 import { User } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
 import { OnBoardingForm } from './Onboarding';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export const Wrappers = ({ children }: { children: React.ReactNode }) => {
   return <AuthWrapper>{children}</AuthWrapper>;
@@ -42,9 +43,15 @@ export const OnboardingWrapper = ({ children, user }: { children: React.ReactNod
 
   const data = userDocData.data;
 
-  if (!data.onboarding) {
-    return <OnBoardingForm />;
-  }
-
-  return <div>{children}</div>;
+  return (
+    <AnimatePresence>
+      {!data.onboarding ? (
+        <OnBoardingForm />
+      ) : (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 };

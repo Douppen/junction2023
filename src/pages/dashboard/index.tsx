@@ -8,21 +8,23 @@ function Dashboard() {
   const displayName = auth.currentUser?.displayName;
 
   return (
-    <div className="flex flex-col items-center m-5">
-      <div className="my-40 flex flex-col">
-        <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>
-          Welcome back{displayName ? `, ${displayName}!` : '!'}
-        </h1>
-        <p style={{ fontSize: '24px', marginBottom: '2px' }}>How have you been feeling recently?</p>
-        <Link href="input" className="self-center mt-10">
-          <button className="btn btn-lg btn-primary">Add entry</button>
-        </Link>
-      </div>
-      <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>History</h1>
-      <PainChart />
-      <div className="my-40">
-        <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
-        <p style={{ fontSize: '24px', marginBottom: '2px' }}>Try to do some yoga</p>
+    <div className="">
+      <div className="flex flex-col items-center">
+        <div className="my-40 flex flex-col text-center">
+          <h1 className="font-bold mb-4 text-4xl">Welcome back{displayName ? `, ${displayName}!` : '!'}</h1>
+          <p className="text-2xl mb-5">How have you been feeling recently?</p>
+          <Link
+            href="/input"
+            className="self-center bg-stone-700 text-white font-bold hover:opacity-80 transition px-7 text-2xl py-2 rounded-full"
+          >
+            Add entry
+          </Link>
+        </div>
+        <PainChart />
+        <div className="my-40">
+          <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
+          <p style={{ fontSize: '24px', marginBottom: '2px' }}>Try to do some yoga</p>
+        </div>
       </div>
     </div>
   );

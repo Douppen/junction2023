@@ -35,7 +35,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ onChange, value, ...pr
       ref={ref}
       value={value}
       onChange={handleChange}
-      className={`placeholder:font-bold placeholder:text-neutral-400 text-2xl outline-none ${
+      className={`placeholder:font-bold placeholder:text-neutral-400 text-xl sm:text-2xl outline-none ${
         !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
       }`}
     />
@@ -44,6 +44,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ onChange, value, ...pr
 
 export const OnBoardingForm = () => {
   const schema = z.object({
+    phoneNumber: z.string().max(100).optional(),
     ageYears: z.string().max(100).optional(),
     preExistingDiagnoses: z.string().max(100).optional(),
     painHistoryDescription: z.string().max(100).optional(),
@@ -53,6 +54,7 @@ export const OnBoardingForm = () => {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
+      phoneNumber: '',
       ageYears: '',
       preExistingDiagnoses: '',
       painHistoryDescription: '',
@@ -70,6 +72,7 @@ export const OnBoardingForm = () => {
   }, [currentInputIndex]);
 
   const [formData, setFormData] = useState({
+    phoneNumber: '',
     ageYears: '',
     preExistingDiagnoses: '',
     painHistoryDescription: '',
@@ -78,6 +81,23 @@ export const OnBoardingForm = () => {
 
   const handleStepSubmit = async (data: z.infer<typeof schema>) => {
     if (currentInputIndex === 0) {
+      const phoneNumber = data.phoneNumber!;
+      if (phoneNumber.length === 0) {
+        form.setError('phoneNumber', { message: 'Please enter a valid phone number' });
+        return;
+      }
+
+      const regex = /(\+)?\d{5,15}/;
+
+      const trimmed = phoneNumber.replace(/\s/g, '');
+
+      if (!trimmed.match(regex)) {
+        form.setError('phoneNumber', { message: 'Please enter a valid phone number' });
+        return;
+      }
+    }
+
+    if (currentInputIndex === 1) {
       const ageYears = data.ageYears!;
       if (ageYears.length === 0) {
         form.setError('ageYears', { message: 'Please enter a valid number' });
@@ -120,6 +140,7 @@ export const OnBoardingForm = () => {
           updateDoc(ref, {
             onboarding: {
               ...formData,
+              ageYears: parseInt(formData.ageYears),
             },
           }).then(() => {
             router.push('/dashboard');
@@ -132,28 +153,29 @@ export const OnBoardingForm = () => {
   };
   const inputs = [
     {
+      name: 'phoneNumber',
+      label: 'What is your phone number?',
+      placeholder: 'Start typing...',
+    },
+    {
       name: 'ageYears',
       label: 'How old are you?',
       placeholder: 'Start typing...',
-      skippable: false,
     },
     {
       name: 'preExistingDiagnoses',
       label: 'What pre-existing diagnoses do you have?',
       placeholder: 'Start typing...',
-      skippable: true,
     },
     {
       name: 'painHistoryDescription',
       label: 'Describe your pain history',
       placeholder: 'Start typing...',
-      skippable: false,
     },
     {
       name: 'alternativeTreatmentsOfInterest',
       label: 'What alternative treatments are you interested in?',
       placeholder: 'Start typing...',
-      skippable: false,
     },
   ] as const;
 
@@ -164,7 +186,7 @@ export const OnBoardingForm = () => {
         form.setFocus(inputs[currentInputIndex].name);
       }}
     >
-      <div className="pl-12 ">
+      <div className="px-4 sm:px-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {inputs.map((input, index) => {
@@ -177,7 +199,7 @@ export const OnBoardingForm = () => {
                     className="relative"
                   >
                     <div className="mb-1.5">
-                      <label className="font-bold text-2xl">
+                      <label className="font-bold text-xl sm:text-2xl">
                         <span>{input.label}</span>
                       </label>
                     </div>
