@@ -93,13 +93,13 @@ The user can create an account and inputs relevant data which is stored in the m
 The MMS implemenation is currently in mock when it comes to speech input due to the impossiblity of sending audio files over 46elks. The user can however make an input Using SMS and will be sent a reminder (once a day) if they forget to report their pain level.  
   
 ### Responsive chatting
-Currently mocked! 
+Continously improving chatting. For each chatting interaction a run is created on the users personal thread which analyzes all the inputted data for that user to formulate a response. 
 ### Data visualization
 The latest pain inputs are organized on the dashboard in an interactive bar chart.
 ## AI powered personal insights
 Currently mocked! 
 ## Technical implementation
-
+The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. 
 ## The current limitiations
 The sources of the response from regular inputs are currently unrelated. The use of OPENAI API also make the language learning model a black box. 
 
