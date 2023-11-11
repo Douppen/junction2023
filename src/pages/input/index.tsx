@@ -19,11 +19,11 @@ function Input() {
   const { data, status, update } = useUserDocument(auth.currentUser?.uid);
   const [value, setValue] = useState('');
   const [prevInputs, setPrevInputs] = useState<InputSchema[]>([]);
-  const [painLevel, setPainLevel] = useState(3);
+  const [painLevel, setPainLevel] = useState(0);
 
-  const [response, setResponse] = useState('');
+  const [response, setResponse] = useState<object>({});
 
-  const OpenAIAssistantPainInputFunction = httpsCallable(useFunctions(), 'OpenAIAssistantPainInput');
+  const painInputToJSON = httpsCallable(useFunctions(), 'AssistantPainInputToJSON');
 
   useEffect(() => {
     if (status === 'success') {
@@ -50,11 +50,11 @@ function Input() {
       inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: {} }],
     });
 
-    const res = await OpenAIAssistantPainInputFunction({
+    const res: object = await painInputToJSON({
       description: value,
     });
 
-    setResponse(JSON.stringify(res));
+    setResponse(res);
 
     /*
     const res = await OpenAIAssistantPainInputFunction({
@@ -135,7 +135,7 @@ function Input() {
             Submit
           </button>
           Response:
-          {response}
+          {JSON.stringify(response)}
         </form>
       </div>
     </div>
