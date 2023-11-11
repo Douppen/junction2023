@@ -7,6 +7,7 @@ export const TestingChat = () => {
   const func = httpsCallable(functions, 'addMessageToAssistantThread');
   const afterOnboarding = httpsCallable(functions, 'runAfterOnboardingComplete');
   const chattingFunctionality = httpsCallable(functions, 'chattingFunctionality');
+  const createAssistant = httpsCallable(functions, 'CreateGeneralAssistant');
 
   const [text, setText] = useState('');
   const [text2, setText2] = useState('');
@@ -56,6 +57,14 @@ export const TestingChat = () => {
         </div>
         <button className="py-2 px-5 bg-green-200 mb-4 rounded-md">Chatting functionality call</button>
       </form>
+      <button
+        onClick={() => {
+          createAssistant();
+        }}
+        className="py-2 px-5 bg-green-200 mb-4 rounded-md"
+      >
+        Create assistant
+      </button>
     </div>
   );
 };
