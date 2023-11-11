@@ -192,4 +192,62 @@ export const addMessageToAssistantThread = onCall(async (req) => {
     content: message,
   });
 });
-export const chattingFunctionality = onCall(async (req) => {});
+
+export const chattingFunctionality = onCall(async (req) => {
+  try {
+    const user = req.auth;
+    const { message } = req.data;
+
+    logger.log('message' + message);
+
+    if (!user) {
+      logger.error('not authed');
+      return {
+        error: 'not authed',
+      };
+    }
+
+    const userDoc = await getFirestore().collection('users').doc(user.uid).get();
+    const userDocData = userDoc.data();
+
+    const threadId = userDocData.assistantThreadId;
+
+    if (!threadId) {
+      logger.error('no thread id');
+      return {
+        error: 'no thread id',
+      };
+    }
+
+    const openai = new OpenAI({ apiKey: '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' });
+
+    await openai.beta.threads.messages.create(threadId, {
+      role: 'user',
+      content: message,
+    });
+
+    const run = await openai.beta.threads.runs.create(threadId, {
+      assistant_id: ASSISTANT_ID,
+      instructions: 'You should answer the users question',
+    });
+    /*
+  Implementing the code that waits for the response 
+  */
+    let status = 'queued';
+    var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+
+    while (status !== 'completed') {
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      status = runStatus.status;
+
+      // Add a delay before checking again (e.g., every few seconds)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    const messages = await openai.beta.threads.messages.list(threadId);
+    logger.log('here are the messages');
+    // const parsed = JSON.parse(messages);
+    logger.log({ openAIMessages: messages.body.data });
+  } catch (e) {
+    logger.error('error');
+  }
+});
