@@ -1,33 +1,62 @@
 import { useUserDocument } from '@/lib/store';
 import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
-import { StringFormat } from 'firebase/storage';
 import { useEffect, useState } from 'react';
-import { useFirestore, useFunctions, useUser } from 'reactfire';
+import { useAuth, useFunctions, useUser } from 'reactfire';
+
+const fields = ['activity', 'trigger', 'body-part', 'vital-information'];
+const requiredFields = ['activity', 'body-part'];
+
+interface InputSchema {
+  description: string;
+  painLevel: number;
+  date: string;
+  fields: Record<(typeof fields)[number], string>;
+}
 
 function Input() {
-  const { data, status, set } = useUserDocument('SpgDdCaYeUSU6Nt9MzlW');
+  const auth = useAuth();
+  const { data, status, update } = useUserDocument(auth.currentUser?.uid);
   const [value, setValue] = useState('');
-  const [painLevel, setPainLevel] = useState(1);
+  const [prevInputs, setPrevInputs] = useState<InputSchema[]>([]);
+  const [painLevel, setPainLevel] = useState(3);
 
   const [response, setResponse] = useState('');
 
   const OpenAIAssistantPainInputFunction = httpsCallable(useFunctions(), 'OpenAIAssistantPainInput');
 
-  const user = useUser();
-  const db = useFirestore();
-
   useEffect(() => {
-    status === 'success' && setValue(data?.test);
+    if (status === 'success') {
+      const inputs = data?.inputs;
+      if (inputs?.length > 0) {
+        setPrevInputs(inputs.slice(0, inputs.length - 1));
+        const lastInput: InputSchema = inputs[inputs.length - 1];
+        const inputDate = new Date(lastInput.date);
+        const today = new Date();
+        if (inputDate.getDate() === today.getDate()) {
+          setValue(lastInput.description);
+          setPainLevel(lastInput.painLevel);
+        }
+      }
+    }
   }, [data, status]);
 
   const loading = status === 'loading';
-  const updateSliderValue = (newValue: React.ChangeEvent<HTMLInputElement>) => {
-    setPainLevel(parseInt(newValue.target.value));
-  };
 
-  const onSubmit = async () => {
-    console.log('running');
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    update({
+      inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: {} }],
+    });
+
+    const res = await OpenAIAssistantPainInputFunction({
+      description: value,
+    });
+
+    setResponse(JSON.stringify(res));
+
+    /*
     const res = await OpenAIAssistantPainInputFunction({
       description: value,
     });
@@ -48,11 +77,19 @@ function Input() {
 
     console.log(parsedObject);
     setResponse(res.data as any);
+    */
   };
 
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-5">
+        <span className="loading loading-spinner loading-lg" />
+      </div>
+    );
+
   return (
-    <div className="flex flex-col items-center pb-32 m-5">
-      <header>
+    <div className="flex flex-col items-center p-5 w-full">
+      <div className="w-full max-w-[800px]">
         <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>
           How have you been feeling recently?
         </h1>
@@ -61,61 +98,46 @@ function Input() {
           Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context in the
           text box.
         </p>
-      </header>
-
-      <form
-        action=""
-        className="w-[1000px]"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-      >
-        <div style={{ width: '68%' }}>
-          <input
-            type="range"
-            min={1}
-            max="5"
-            value={painLevel}
-            onChange={updateSliderValue}
-            className="range range-error"
-            step="1"
-          />
-          <div className="w-full flex justify-between text-s px-2">
-            {[1, 2, 3, 4, 5].map((label) => (
-              <span key={label}>{label}</span>
-            ))}
+        <form className="flex flex-col items-center gap-5" onSubmit={onSubmit}>
+          <div className="w-full">
+            <label className="label" htmlFor="pain-level">
+              Pain level
+            </label>
+            <input
+              type="range"
+              id="pain-level"
+              min={1}
+              max="5"
+              value={painLevel}
+              onChange={(e) => setPainLevel(parseInt(e.target.value))}
+              className="range range-error"
+              step="1"
+            />
+            <div className="w-full flex justify-between text-s px-2">
+              {[1, 2, 3, 4, 5].map((label) => (
+                <span key={label}>{label}</span>
+              ))}
+            </div>
           </div>
-        </div>
-
-        {loading ? (
-          <span className="loading loading-spinner loading-lg" />
-        ) : (
-          <textarea
-            className="textarea textarea-bordered w-full max-w-[900px] h-[200px] my-10"
-            placeholder="Test"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => {
-              // if (e.key === 'Enter') {
-              //   e.preventDefault();
-              //   set({ test: value, painLevel });
-              // }
-            }}
-          />
-        )}
-        <button className="py-2 px-6 bg-blue-200 rounded-md font-bold" type="submit">
-          Submit
-        </button>
-        <div>
-          {/* {JSON.stringify(value)}
-          {JSON.stringify(data)} */}
-          <div>
-            Response:
-            {JSON.stringify(response)}
+          <div className="w-full">
+            <label className="label" htmlFor="description">
+              Description
+            </label>
+            <textarea
+              className="textarea textarea-bordered w-full max-w-[900px] h-[200px]"
+              placeholder="Type your description here..."
+              id="description"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
           </div>
-        </div>
-      </form>
+          <button className="btn btn-success btn-lg" type="submit">
+            Submit
+          </button>
+          Response:
+          {response}
+        </form>
+      </div>
     </div>
   );
 }

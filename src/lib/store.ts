@@ -1,7 +1,7 @@
 import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useFirestore, useFirestoreDocData } from 'reactfire';
 
-export const useUserDocument = (uid: string) => {
+export const useUserDocument = (uid: string | undefined) => {
   const db = useFirestore();
   const usersRef = collection(db, 'users');
   const userDoc = doc(usersRef, uid);
