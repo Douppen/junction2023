@@ -84,9 +84,9 @@ export const CreateUserThread = onCall(async (req) => {
   });
   return thread.id
 });
-
 export const OpenAIAddmessagetoBigAssistant= onCall( async (req) => {
+  const {threadid, message} = req.data
   const openai = new OpenAI({ apiKey: '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' });
   const assistant_id = 'asst_dOTLaf0iSAjwbvK5ULNT2nfE'; 
-  const threadID= 
+  
 })
