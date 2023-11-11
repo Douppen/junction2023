@@ -13,16 +13,17 @@
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.2",
     "@mui/x-charts": "^6.18.1",
+    "axios": "^1.6.1",
     "es6-promise-pool": "^2.5.0",
     "firebase": "^9.23.0",
     "framer-motion": "^10.16.4",
     "next": "^13.5.6",
     "react": "^18",
     "react-dom": "^18",
-    "sonner": "^1.2.0",
     "react-hook-form": "^7.48.2",
     "react-markdown": "^9.0.0",
     "reactfire": "^4.2.3",
+    "sonner": "^1.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
