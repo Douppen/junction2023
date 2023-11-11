@@ -22,6 +22,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
     "react-markdown": "^9.0.0",
+    "react-media-recorder": "^1.6.5",
     "reactfire": "^4.2.3",
     "sonner": "^1.2.0",
     "zod": "^3.22.4"

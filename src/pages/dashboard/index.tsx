@@ -12,15 +12,48 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { httpsCallable } from 'firebase/functions';
+import dynamic from 'next/dynamic';
+
+const ReactMediaRecorder = dynamic(() => import('react-media-recorder').then((mod) => mod.ReactMediaRecorder), {
+  ssr: false,
+});
 
 function Dashboard() {
   return (
     <AnimateUp className="">
       <div className="grid grid-cols-[1fr_auto]">
-        <InputForm />
-        <div className="flex items-center -mt-20">
-          <PainChart />
+        <div className="h-[90vh]">
+          <div>
+            <ReactMediaRecorder
+              audio
+              render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+                <div>
+                  <p>{status}</p>
+                  <button onClick={startRecording}>Start Recording</button>
+                  <button onClick={stopRecording}>Stop Recording</button>
+                  <video src={mediaBlobUrl} controls autoPlay loop />
+                </div>
+              )}
+            />
+          </div>
+          <span className="isolate inline-flex rounded-full shadow-sm mb-5">
+            <button
+              type="button"
+              className="relative inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+            >
+              Pain log
+            </button>
+
+            <button
+              type="button"
+              className="relative -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+            >
+              Assistant chat
+            </button>
+          </span>
+          <InputForm />
         </div>
+        <div className="flex items-center -mt-20">{/* <PainChart /> */}</div>
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
           <p style={{ fontSize: '24px', marginBottom: '2px' }}>
@@ -163,32 +196,12 @@ const InputForm = () => {
 
   return (
     <div
-      className="h-[90vh] pb-20 flex flex-col justify-center"
+      className="h-full pb-20 flex flex-col justify-center"
       onClick={() => {
         form.setFocus(inputs[currentInputIndex]?.name);
       }}
     >
       <div className="px-4 md:px-12 -mt-8">
-        <span className="isolate inline-flex rounded-full shadow-sm mb-5">
-          <button
-            type="button"
-            className="relative inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-          >
-            Years
-          </button>
-          <button
-            type="button"
-            className="relative -ml-px inline-flex items-center bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-          >
-            Months
-          </button>
-          <button
-            type="button"
-            className="relative -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-          >
-            Days
-          </button>
-        </span>
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {inputs.map((input, index) => {

@@ -14,6 +14,8 @@ export const Wrappers = ({ children }: { children: React.ReactNode }) => {
 export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const singinCheck = useSigninCheck();
 
+  return <>{children}</>;
+
   if (singinCheck.status === 'error') {
     return <div>Error: {singinCheck.error?.message}</div>;
   }
@@ -26,7 +28,7 @@ export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     return <Login />;
   }
 
-  return <OnboardingWrapper user={singinCheck.data.user}>{children}</OnboardingWrapper>;
+  // return <OnboardingWrapper user={singinCheck.data.user}>{children}</OnboardingWrapper>;
 };
 
 export const OnboardingWrapper = ({ children, user }: { children: React.ReactNode; user: User }) => {

@@ -52,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               )}
               <div className="dropdown dropdown-end">
                 <label tabIndex={0} className="btn btn-square btn-ghost">
-                  {signinCheck.data.user?.photoURL ? (
+                  {signinCheck.data?.user?.photoURL ? (
                     <img className="inline-block h-9 w-9 rounded-full" src={signinCheck.data.user.photoURL} alt="" />
                   ) : (
                     <svg fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
