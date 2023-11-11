@@ -81,6 +81,28 @@ export const CreateGeneralAssistant= onCall(async (req) => {
            }
         }
       },
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_similar_activities",
+          "description": "Get a list of activities that is similar to what the user previously has enjoyed",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "commands": {
+                type: "array",
+                items: {
+                  type: "string",
+                  description: "An activity the user would enjoy"
+                },
+                description: "List of activities the user would enjoy"
+              }
+              },
+              required: ["commands"]
+           }
+        }
+      }
     ],
     model: "gpt-4-1106-preview",
   });
