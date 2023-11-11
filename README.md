@@ -96,16 +96,16 @@ The MMS implemenation is currently in mock when it comes to speech input due to 
 Currently mocked! 
 ### Data visualization
 The latest pain inputs are organized on the dashboard in an interactive bar chart.
-### AI powered personal insights
+## AI powered personal insights
 Currently mocked! 
-### Technical implementation
+## Technical implementation
 
-### The current limitiations
+## The current limitiations
 The sources of the response from regular inputs are currently unrelated. The use of OPENAI API also make the language learning model a black box. 
 
-### Online Deployment 
+## Online Deployment 
 
 The production deployment can be found at [https://junction2023-datagrabbarna.web.app/](https://junction2023-datagrabbarna.web.app/).
 
-### The future vision 
+## The future vision 
 Restorative currently lack some features that we would have liked to have time to implement. An connection with the google calender API would have been nice to make it possible for the AI to recommend tasks and input them in google calender. A map implementation with data on the closest places to do pain reliefing theraphy (like acupuncture) would have been nice. 
