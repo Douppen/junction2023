@@ -12,7 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <main>
       <div className="navbar bg-base-100">
         <div className="flex-1 gap-4">
-          {['Dashboard', 'Input', 'Chat'].map((item) => (
+          {['Dashboard', 'Input', 'Chat', 'Onboarding'].map((item) => (
             <Link
               key={item}
               className={`btn btn-ghost normal-case text-xl ${
