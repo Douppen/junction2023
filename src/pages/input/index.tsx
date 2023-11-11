@@ -1,11 +1,18 @@
 import { useUserDocument } from '@/lib/store';
-import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { useEffect, useState } from 'react';
-import { useAuth, useFunctions, useUser } from 'reactfire';
+import { useAuth, useFunctions } from 'reactfire';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
-const fields = ['activity', 'trigger', 'body-part', 'vital-information'];
-const requiredFields = ['activity', 'body-part'];
+const fields = ['activity_of_the_user', 'trigger', 'body_part', 'vital_information'];
+const requiredFields = ['activity_of_the_user', 'body_part'];
+const fieldDisplayNames = {
+  activity_of_the_user: 'Activity of the user',
+  trigger: 'Trigger',
+  body_part: 'Body part',
+  vital_information: 'Vital information',
+};
 
 interface InputSchema {
   description: string;
@@ -15,6 +22,7 @@ interface InputSchema {
 }
 
 function Input() {
+  const router = useRouter();
   const auth = useAuth();
   const { data, status, update } = useUserDocument(auth.currentUser?.uid);
   const [value, setValue] = useState('');
@@ -48,19 +56,31 @@ function Input() {
 
     setSubmitLoading(true);
 
-    const res: any = await painInputToJSON({
+    const { data: res }: any = await painInputToJSON({
       description: value,
     });
 
+    setResponse(res);
+
     if (res.error) {
+      setSubmitLoading(false);
+      toast.error('The description is too short.');
+      return;
+    }
+
+    for (const field of requiredFields) {
+      if (!res[field]) {
+        setSubmitLoading(false);
+        toast.error(`${(fieldDisplayNames as any)[field]} is required.`);
+        return;
+      }
     }
 
     update({
-      inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: {} }],
+      inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: res }],
     });
 
-    setResponse(res);
-    setSubmitLoading(false);
+    router.push('/confirm-input');
 
     /*
     const res = await OpenAIAssistantPainInputFunction({

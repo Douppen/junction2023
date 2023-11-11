@@ -1,11 +1,11 @@
 import { firebaseConfig } from '@/lib/firebase';
-import { getAnalytics, isSupported } from 'firebase/analytics';
-import { FirebaseApp } from 'firebase/app';
-import { connectAuthEmulator, getAuth } from 'firebase/auth'; // Firebase v9+
+import { getAnalytics } from 'firebase/analytics';
+import { getAuth } from 'firebase/auth'; // Firebase v9+
 import { getFirestore } from 'firebase/firestore'; // Firebase v9+
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 
 import {
   FirebaseAppProvider,
@@ -37,6 +37,7 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
 
   return (
     <AuthProvider sdk={auth}>
+      <Toaster expand position="top-center" />
       <FirestoreProvider sdk={db}>
         <StorageProvider sdk={storage}>
           <FunctionsProvider sdk={functions}>
