@@ -40,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <span className="m-3">
                 Signed in as:
                 <br />
-                {signinCheck.data.user?.displayName}
+                {signinCheck.data?.user?.displayName ?? 'Not signed in'}
               </span>
               <li>
                 <button className="btn btn-sm" onClick={() => signOut(auth)}>
