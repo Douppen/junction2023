@@ -1,4 +1,4 @@
-import { AuthWrapper } from '@/components/AuthWrapper';
+import { AuthWrapper, Wrappers } from '@/components/Wrappers';
 import { Layout } from '@/components/Layout';
 import { Providers } from '@/components/Providers';
 import '@/styles/globals.css';
@@ -21,11 +21,11 @@ export default function App({ Component, pageProps }: AppProps) {
       {/* base styles here */}
       <div className="antialiased">
         <Providers>
-          <AuthWrapper>
+          <Wrappers>
             <Layout>
               <Component {...pageProps} />
             </Layout>
-          </AuthWrapper>
+          </Wrappers>
         </Providers>
       </div>
     </SafeHydrate>

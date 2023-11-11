@@ -60,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
       </div>
       </div>
-      <div className="m-5">{children}</div>
+      <div>{children}</div>
     </main>
   );
 }

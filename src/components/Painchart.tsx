@@ -1,6 +1,9 @@
 import _ from 'lodash';
 
 import { BarChart } from '@mui/x-charts/BarChart';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { useTheme } from '@emotion/react';
+import { useWindowSize } from '@/lib/utils';
 
 type painLevelData = {
   painLevel: number;
@@ -48,7 +51,7 @@ const graphData: painLevelData[] = [
     painLevel: 2,
     date: new Date('2023-11-12T13:30:00Z'),
   },
-    {
+  {
     painLevel: 3,
     date: new Date('2023-11-13T09:45:00Z'),
   },
@@ -79,7 +82,7 @@ const graphData: painLevelData[] = [
   {
     painLevel: 4,
     date: new Date('2023-11-20T10:25:00Z'),
-  }
+  },
 ];
 
 const avgPainLevel = (data: painLevelData[]): number => {
@@ -96,7 +99,7 @@ const preProcess = (data: painLevelData[]) => {
     .map(([_key, values]) => {
       return { date: values[0].date, pain: avgPainLevel(values) };
     })
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
   return dayAndAverage;
 };
 
@@ -104,10 +107,13 @@ function PainChart() {
   // TODO: fetch real data here
   const preProcessed = preProcess(graphData).slice(-7);
 
+  const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  const theme = createTheme({ palette: { mode } });
+
+  const [width] = useWindowSize();
+
   return (
-    // FIXME: Proper theming
-    // FIXME: Scale the chart based on viewport width
-    <>
+    <ThemeProvider theme={theme}>
       <BarChart
         xAxis={[
           {
@@ -122,10 +128,10 @@ function PainChart() {
             label: 'Average pain level',
           },
         ]}
-        width={720}
+        width={Math.min(width, 720)}
         height={480}
       />
-    </>
+    </ThemeProvider>
   );
 }
 
