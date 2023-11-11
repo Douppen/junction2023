@@ -8,7 +8,7 @@ function Dashboard() {
   const displayName = auth.currentUser?.displayName;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center m-5">
       <div className="my-40 flex flex-col">
         <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>
           Welcome back{displayName ? `, ${displayName}!` : '!'}

@@ -51,7 +51,7 @@ function Input() {
   };
 
   return (
-    <div className="flex flex-col items-center pb-32">
+    <div className="flex flex-col items-center pb-32 m-5">
       <header>
         <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>
           How have you been feeling recently?
