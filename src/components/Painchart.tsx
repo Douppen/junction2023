@@ -99,7 +99,7 @@ const preProcess = (data: painLevelData[]) => {
     .map(([_key, values]) => {
       return { date: values[0].date, pain: avgPainLevel(values) };
     })
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
   return dayAndAverage;
 };
 
