@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth, useSigninCheck } from 'reactfire';
 
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useRouter();
   const signinCheck = useSigninCheck();
@@ -18,7 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
         <div className="flex items-center space-x-4 mr-20">
-          {['Dashboard', 'Input', 'Chat'].map((item) => (
+          {['Dashboard', 'Input', 'Chat', 'About'].map((item) => (
             <Link
               key={item}
               className={`btn btn-ghost normal-case text-xl ${
