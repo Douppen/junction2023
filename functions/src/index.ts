@@ -48,9 +48,22 @@ export const CreateGeneralAssistant= onCall(async (req) => {
     model: "gpt-4-1106-preview",
   }
   )
+  /*
+  Create the necessary functions for the AI
+  */
+
   return assistant.id
 })
-
+export const CreatetheSpecificInputAssistant = onCall(async (req)=> {
+  new OpenAI({ apiKey: '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' });
+  const assistant= await openai.beta.assistants.create({
+    name: "Pain Assitant",
+    description: `You are a assistant that from the description provided by the user should define following variables (activity_of_the_user, body_part, vital_information, trigger) the variables should be returned as an json.  `,
+    model: "gpt-4-1106-preview",
+  }
+  )
+  return assistant.id
+})
 export const OpenAIcompletions = onCall(async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
