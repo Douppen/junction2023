@@ -13,10 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <main>
       <div className="navbar bg-base-100">
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center">
-            <img src='/logo.png' alt='Logo' width='50' height='50' style={{marginLeft: '10px'}} />
-            <span style={{ fontSize: '25px', fontWeight: 'bold', marginLeft: '10px' }}>Restorative</span>
-          </div>
+          <img src="/logo.png" alt="Logo" width="50" height="50" style={{ marginLeft: '10px' }} />
 
         <div className="flex items-center space-x-4 mr-20">
           {['Dashboard', 'Input', 'Chat', 'About'].map((item) => (
@@ -48,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <span className="m-3">
                   Signed in as:
                   <br />
-                  {signinCheck?.data?.user?.displayName}
+                  {signinCheck.data?.user?.displayName}
                 </span>
                 <li>
                   <button className="btn btn-sm" onClick={() => signOut(auth)}>

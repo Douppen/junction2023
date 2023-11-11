@@ -6,6 +6,7 @@ import * as logger from 'firebase-functions/logger';
 import OpenAI from 'openai';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp } from 'firebase-admin/app';
+import { PromisePool } from 'es6-promise-pool';
 
 initializeApp();
 
@@ -34,6 +35,51 @@ export const helloWorld = onCall((req) => {
   return 'Hello from Firebase!' + text;
 });
 
+export const CreateGeneralAssistant= onCall(async (req) => {
+  const openai = new OpenAI({ apiKey: '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' });
+  const assistant= await openai.beta.assistants.create({
+    name: "Pain Assitant",
+    description: `
+    You should help me with incrementally improving my chronic pain. 
+    I would like to get better through novel activities and not have to rely on my pain medication as much.
+    I will continuously give you daily updates on my pain level, its location, what I did that day, how active I was, if I tried any therapies, what my diet was like, etc.
+    The daily updates will be inputted as a json file with variables: (activity_of_the_user, body_part, vital_information, trigger) 
+    You should be my assistant helping me to get better, and as I give you more information every day, you should be able to help me more and more. `,
+    tools=[
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_one_improvement",
+          "description": "Get based on the user input one improvement the user could make when it comes to pain managment",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              },
+           }
+        }
+      }
+    ],
+    model: "gpt-4-1106-preview",
+  });
+  /*
+  Create the necessary functions for the AI
+  */
+  // Function that return one area of improvement to the AI
+  // Function that return one area of what the user is currently successfull with.
+
+  return assistant.id
+})
+export const CreatetheSpecificInputAssistant = onCall(async (req)=> {
+  new OpenAI({ apiKey: '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' });
+  const assistant= await openai.beta.assistants.create({
+    name: "Pain Assitant",
+    description: `You are a assistant that from the description provided by the user should define following variables (activity_of_the_user, body_part, vital_information, trigger) the variables should be returned as an json.  `,
+    model: "gpt-4-1106-preview",
+  }
+  )
+  return assistant.id
+})
 export const OpenAIcompletions = onCall(async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
@@ -82,12 +128,13 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   const messages = await openai.beta.threads.messages.list(thread.id);
+  const content = messages.data[0].content;
 
   let json = {};
   try {
-    json = JSON.parse(messages.data[0].content);
+    json = JSON.parse(content);
   } catch (error) {
-    json = { error: true };
+    json = { error: true, raw: content };
   }
 
   return json;
@@ -113,6 +160,9 @@ export const OpenAIAddmessagetoBigAssistant = onCall(async (req) => {
   const assistant_id = 'asst_dOTLaf0iSAjwbvK5ULNT2nfE';
 });
 
+// Reduce the bill :))
+const MAX_CONCURRENT = 3
+
 export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
   const db = getFirestore();
   const userRef = db.collection('users');
@@ -122,12 +172,13 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
 
   const messageData = {
     from: 'Restorative',
-    message: "You haven't yet added your data for today! Your data helps us help you better.",
+    message:
+      "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
   };
 
   const today = new Date().toDateString();
 
-  Promise.all(
+  const pool = new PromisePool(
     users.map(async (user) => {
       if (user.data().updateTime.toDate().toDateString() != today) {
         console.log(`Sending update to ${user.id}`);
@@ -144,8 +195,9 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
           .then((json) => console.log(json))
           .catch((err) => console.log(err));
       }
-    })
-  );
+    }), MAX_CONCURRENT);
+
+    pool.start().then(() => console.log("All reminders sent"))
 });
 
 // We create a new GPT assistant thread for the user and pass it some data
@@ -186,4 +238,62 @@ export const addMessageToAssistantThread = onCall(async (req) => {
     content: message,
   });
 });
-export const chattingFunctionality = onCall(async (req) => {});
+
+export const chattingFunctionality = onCall(async (req) => {
+  try {
+    const user = req.auth;
+    const { message } = req.data;
+
+    logger.log('message' + message);
+
+    if (!user) {
+      logger.error('not authed');
+      return {
+        error: 'not authed',
+      };
+    }
+
+    const userDoc = await getFirestore().collection('users').doc(user.uid).get();
+    const userDocData = userDoc.data();
+
+    const threadId = userDocData.assistantThreadId;
+
+    if (!threadId) {
+      logger.error('no thread id');
+      return {
+        error: 'no thread id',
+      };
+    }
+
+    const openai = new OpenAI({ apiKey: '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' });
+
+    await openai.beta.threads.messages.create(threadId, {
+      role: 'user',
+      content: message,
+    });
+
+    const run = await openai.beta.threads.runs.create(threadId, {
+      assistant_id: ASSISTANT_ID,
+      instructions: 'You should answer the users question',
+    });
+    /*
+  Implementing the code that waits for the response 
+  */
+    let status = 'queued';
+    var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+
+    while (status !== 'completed') {
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      status = runStatus.status;
+
+      // Add a delay before checking again (e.g., every few seconds)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    const messages = await openai.beta.threads.messages.list(threadId);
+    logger.log('here are the messages');
+    // const parsed = JSON.parse(messages);
+    logger.log({ openAIMessages: messages.body.data });
+  } catch (e) {
+    logger.error('error');
+  }
+});
