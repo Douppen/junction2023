@@ -6,6 +6,7 @@ import * as logger from 'firebase-functions/logger';
 import OpenAI from 'openai';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp } from 'firebase-admin/app';
+import { PromisePool } from 'es6-promise-pool';
 
 initializeApp();
 
@@ -113,6 +114,9 @@ export const OpenAIAddmessagetoBigAssistant = onCall(async (req) => {
   const assistant_id = 'asst_dOTLaf0iSAjwbvK5ULNT2nfE';
 });
 
+// Reduce the bill :))
+const MAX_CONCURRENT = 3
+
 export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
   const db = getFirestore();
   const userRef = db.collection('users');
@@ -122,12 +126,13 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
 
   const messageData = {
     from: 'Restorative',
-    message: "You haven't yet added your data for today! Your data helps us help you better.",
+    message:
+      "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
   };
 
   const today = new Date().toDateString();
 
-  Promise.all(
+  const pool = new PromisePool(
     users.map(async (user) => {
       if (user.data().updateTime.toDate().toDateString() != today) {
         console.log(`Sending update to ${user.id}`);
@@ -144,8 +149,9 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
           .then((json) => console.log(json))
           .catch((err) => console.log(err));
       }
-    })
-  );
+    }), MAX_CONCURRENT);
+
+    pool.start().then(() => console.log("All reminders sent"))
 });
 
 // We create a new GPT assistant thread for the user and pass it some data
