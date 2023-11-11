@@ -1,13 +1,30 @@
+import { useWindowSize } from '@/lib/utils';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth, useSigninCheck } from 'reactfire';
 
-
 export function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useRouter();
   const signinCheck = useSigninCheck();
   const auth = useAuth();
+
+  const [width] = useWindowSize();
+
+  const isMobile = width < 768;
+
+  const pageLink = (name: string) => (
+    <Link
+      key={name}
+      className={`btn btn-ghost normal-case ${isMobile ? 'text-md' : 'text-xl'} ${
+        pathname === `/${name.toLowerCase()}` ? 'btn-active' : ''
+      }`}
+      onClick={() => isMobile && (document.activeElement as any).blur()}
+      href={`/${name.toLowerCase()}`}
+    >
+      {name}
+    </Link>
+  );
 
   return (
     <main>
@@ -15,19 +32,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between w-full">
           <img src="/logo.png" alt="Logo" width="50" height="50" style={{ marginLeft: '10px' }} />
 
-        <div className="flex items-center space-x-4 mr-20">
-          {['Dashboard', 'Input', 'Chat', 'About'].map((item) => (
-            <Link
-              key={item}
-              className={`btn btn-ghost normal-case text-xl ${
-                pathname === `/${item.toLowerCase()}` ? 'btn-active' : ''
-              }`}
-              href={`/${item.toLowerCase()}`}
-            >
-              {item}
-            </Link>
-          ))}
-        </div>
+          {!isMobile && (
+            <div className="flex items-center space-x-4 mr-20">
+              {['Dashboard', 'Input', 'Chat', 'About'].map((item) => pageLink(item))}
+            </div>
+          )}
 
           <div className="flex-none">
             <div className="dropdown dropdown-end">
@@ -42,6 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </svg>
               </label>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                {isMobile && ['Dashboard', 'Input', 'Chat', 'About'].map(pageLink)}
                 <span className="m-3">
                   Signed in as:
                   <br />
