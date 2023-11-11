@@ -6,9 +6,13 @@ import * as logger from 'firebase-functions/logger';
 import OpenAI from 'openai';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp } from 'firebase-admin/app';
+<<<<<<< Updated upstream
 
 initializeApp();
+=======
+>>>>>>> Stashed changes
 
+initializeApp();
 const DEFAULT_REGION = 'europe-west1';
 setGlobalOptions({ region: DEFAULT_REGION });
 
@@ -59,6 +63,7 @@ export const OpenAIAssistantPainInput = onCall(async (req) => {
   return messages.data[0].content;
 });
 
+<<<<<<< Updated upstream
 export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
   const db = getFirestore();
   const userRef = db.collection('users');
@@ -94,6 +99,8 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
   );
 });
 
+=======
+>>>>>>> Stashed changes
 // We create a new GPT assistant thread for the user and pass it some data
 export const runAfterOnboardingComplete = onCall(async (req) => {
   const user = req.auth;
