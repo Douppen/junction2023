@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { setGlobalOptions } from 'firebase-functions/v2/options';
-import { onCall } from 'firebase-functions/v2/https';
+import { onCall, onRequest } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as logger from 'firebase-functions/logger';
-import OpenAI from 'openai';
+import OpenAI, { toFile } from 'openai';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp } from 'firebase-admin/app';
 import { PromisePool } from 'es6-promise-pool';
@@ -166,7 +166,6 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
     completed = runStatus.status === 'completed';
     logger.log(`Run status: ${runStatus.status}`);
-    logger.log('Run: ' + runStatus.required_action);
     // Add a delay before checking again (e.g., every few seconds)
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
@@ -200,53 +199,6 @@ export const CreateUserThread = onCall(async (req) => {
   return thread.id;
 });
 
-export const OpenAIAddmessagetoBigAssistant = onCall(async (req) => {
-  const { threadid, message } = req.data;
-  const openai = new OpenAI({ apiKey: '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' });
-  const assistant_id = 'asst_dOTLaf0iSAjwbvK5ULNT2nfE';
-});
-
-// Reduce the bill :))
-const MAX_CONCURRENT = 3;
-
-export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
-  const db = getFirestore();
-  const userRef = db.collection('users');
-  const users = await userRef.get().then((s) => s.docs);
-
-  const auth = Buffer.from('u23b270b98ddd5c3edce2a14d954097f0:1E93D770BCCD138511D0400FC006C0C3').toString('base64');
-
-  const messageData = {
-    from: 'Restorative',
-    message:
-      "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
-  };
-
-  const today = new Date().toDateString();
-
-  const pool = new PromisePool(
-    users.map(async (user) => {
-      if (user.data().updateTime.toDate().toDateString() != today) {
-        console.log(`Sending update to ${user.id}`);
-        // TODO: Figure out user phone number
-        const phoneNumber = '+358505244320';
-        const message = new URLSearchParams({ ...messageData, to: phoneNumber }).toString();
-
-        await fetch('https://api.46elks.com/a1/sms', {
-          method: 'post',
-          body: message,
-          headers: { Authorization: 'Basic ' + auth },
-        })
-          .then((res) => res.json())
-          .then((json) => console.log(json))
-          .catch((err) => console.log(err));
-      }
-    }),
-    MAX_CONCURRENT
-  );
-
-  pool.start().then(() => console.log('All reminders sent'));
-});
 
 // We create a new GPT assistant thread for the user and pass it some data
 export const runAfterOnboardingComplete = onCall(async (req) => {
@@ -280,13 +232,17 @@ export const addMessageToAssistantThread = onCall(async (req) => {
     };
   }
 
+  await addMessageToThread(threadId, message)
+});
+
+const addMessageToThread = async (threadId, message) => {
   const openai = new OpenAI({ apiKey: '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' });
 
   await openai.beta.threads.messages.create(threadId, {
     role: 'user',
     content: message,
   });
-});
+}
 
 export const chattingFunctionality = onCall(async (req) => {
   try {
@@ -346,3 +302,78 @@ export const chattingFunctionality = onCall(async (req) => {
     logger.error('error');
   }
 });
+
+
+// Reduce the bill :))
+const MAX_CONCURRENT = 3
+
+export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
+  const db = getFirestore();
+  const userRef = db.collection('users');
+  const users = await userRef.get().then((s) => s.docs);
+
+  const auth = Buffer.from('u23b270b98ddd5c3edce2a14d954097f0:1E93D770BCCD138511D0400FC006C0C3').toString('base64');
+
+  const messageData = {
+    from: 'Restorative',
+    message:
+      "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
+  };
+
+  const today = new Date().toDateString();
+
+  const pool = new PromisePool(
+    users.map(async (user) => {
+      if (user.data().updateTime.toDate().toDateString() != today) {
+        console.log(`Sending update to ${user.id}`);
+        // TODO: Figure out user phone number
+        const phoneNumber = user.data().phoneNumber
+        if (!phoneNumber) {
+          return
+        }
+        const message = new URLSearchParams({ ...messageData, to: phoneNumber }).toString();
+
+        await fetch('https://api.46elks.com/a1/sms', {
+          method: 'post',
+          body: message,
+          headers: { Authorization: 'Basic ' + auth },
+        })
+          .then((res) => res.json())
+          .then((json) => console.log(json))
+          .catch((err) => console.log(err));
+      }
+    }), MAX_CONCURRENT);
+
+    pool.start().then(() => console.log("All reminders sent"))
+});
+
+
+/*
+ *  Example request: {"data": {"from": "+35812345678", "audioUrl": "https://eample.org/audio.mp3."}}
+ */
+export const recieveMMSAudio = onCall(async (req: Request) => {
+  try {
+    const openai = new OpenAI({ apiKey: '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' });
+    const { audioUrl, from } = req.data
+    const audio = await fetch(audioUrl)
+    const transcriptions = await openai.audio.transcriptions.create({
+      file: await toFile(audio, "audio.mp3"),
+      model: 'whisper-1'
+    })
+
+    console.log(from)
+
+    const db = getFirestore();
+    const snap = await db.collection('users').where("phoneNumber", "==", from).get();
+    if (snap.empty) {
+      return { error: 404, raw: "invalid request, no such user" };
+    }
+
+    let user = undefined
+    snap.forEach(u => user = u.data())
+    await addMessageToThread(user?.assistantThreadId, transcriptions.text)
+    return { transcription: transcriptions.text }
+  } catch {
+    return { error: 404, raw: "invalid request" };
+  }
+})
