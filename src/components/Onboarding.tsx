@@ -186,7 +186,7 @@ export const OnBoardingForm = () => {
         form.setFocus(inputs[currentInputIndex].name);
       }}
     >
-      <div className="">
+      <div className="px-4 md:px-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {inputs.map((input, index) => {
