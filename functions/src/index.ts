@@ -351,7 +351,7 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
 /*
  *  Example request: {"data": {"from": "+35812345678", "audioUrl": "https://eample.org/audio.mp3."}}
  */
-export const recieveMMSAudio = onCall(async (req: Request) => {
+export const receiveMMSAudio = onCall(async (req: Request) => {
   try {
     const openai = new OpenAI({ apiKey: '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' });
     const { audioUrl, from } = req.data
