@@ -23,7 +23,7 @@ function Dashboard() {
         <PainChart />
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
-          <p style={{ fontSize: '24px', marginBottom: '2px' }}>Try to do some yoga</p>
+          <p style={{ fontSize: '24px', marginBottom: '2px' }}>Based on your personal data, it seems like swimming is an effective paint mitigator!</p>
         </div>
       </div>
     </div>
