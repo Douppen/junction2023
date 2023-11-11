@@ -7,13 +7,6 @@ import { useRouter } from 'next/navigation';
 import { AnimateUp } from '@/components/AnimateUp';
 
 const fields = ['activity_of_the_user', 'trigger', 'body_part', 'vital_information'];
-const requiredFields = ['activity_of_the_user', 'body_part'];
-const fieldDisplayNames = {
-  activity_of_the_user: 'Activity of the user',
-  trigger: 'Trigger',
-  body_part: 'Body part',
-  vital_information: 'Vital information',
-};
 
 interface InputSchema {
   description: string;
@@ -25,16 +18,21 @@ interface InputSchema {
 function Input() {
   const router = useRouter();
   const auth = useAuth();
+
+  if (!auth.currentUser) {
+    router.push("/login")
+    return
+  }
+
   const { data, status, update } = useUserDocument(auth.currentUser?.uid);
   const [value, setValue] = useState('');
-  const [prevInputs, setPrevInputs] = useState<InputSchema[]>([]);
+  const [_prevInputs, setPrevInputs] = useState<InputSchema[]>([]);
   const [painLevel, setPainLevel] = useState(0);
-  const [response, setResponse] = useState<object>({});
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const userDocumentLoading = status === 'loading';
 
-  const painInputToJSON = httpsCallable(useFunctions(), 'AssistantPainInputToJSON');
+  const addPainInput = httpsCallable(useFunctions(), 'addPainInput');
 
   useEffect(() => {
     if (status === 'success') {
@@ -57,54 +55,15 @@ function Input() {
 
     setSubmitLoading(true);
 
-    const { data: res }: any = await painInputToJSON({
+    await addPainInput({
       description: value,
+      painLevel: painLevel,
     });
 
-    setResponse(res);
-
-    if (res.error) {
-      setSubmitLoading(false);
-      toast.error('The description is too short.');
-      return;
-    }
-
-    for (const field of requiredFields) {
-      if (!res[field]) {
-        setSubmitLoading(false);
-        toast.error(`${(fieldDisplayNames as any)[field]} is required.`);
-        return;
-      }
-    }
-
-    update({
-      inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: res }],
-    });
-
-    router.push('/confirm-input');
-
-    /*
-    const res = await OpenAIAssistantPainInputFunction({
-      description: value,
-    });
-    // @ts-ignore
-    const jsonContent = res.data[0].text.value.match(/```json\n([\s\S]*?)\n```/)[1];
-    const parsedObject = JSON.parse(jsonContent);
-
-    const docRef = doc(db, 'users', user.data!.uid);
-    await updateDoc(docRef, {
-      logs: arrayUnion({
-        timestampCreated: Timestamp.now(),
-        activity: parsedObject.activity_of_the_user,
-        bodyPart: parsedObject.body_part,
-        trigger: parsedObject.trigger,
-        vitalInfo: parsedObject.vital_information,
-      }),
-    });
-
-    console.log(parsedObject);
-    setResponse(res.data as any);
-    */
+    setValue("")
+    setPainLevel(0)
+    setSubmitLoading(false)
+    toast.success("Data sent!")
   };
 
   if (userDocumentLoading)
@@ -161,8 +120,6 @@ function Input() {
           <button className="btn btn-success btn-lg" type="submit">
             Submit
           </button>
-          Response:
-          {JSON.stringify(response)}
         </form>
       </div>
       {submitLoading && (

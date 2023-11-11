@@ -9,8 +9,11 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Input } from './Input';
+import { runAfterOnboardingComplete } from '../../functions/src';
 
 export const OnBoardingForm = () => {
+  const afterOnboarding = httpsCallable(useFunctions(), 'runAfterOnboardingComplete');
+
   const schema = z.object({
     phoneNumber: z.string().max(100).optional(),
     ageYears: z.string().max(100).optional(),
@@ -111,7 +114,9 @@ export const OnBoardingForm = () => {
               ageYears: parseInt(formData.ageYears),
             },
           }).then(() => {
-            router.push('/dashboard');
+            afterOnboarding().then(() => {
+                router.push('/dashboard');
+            })
           });
         });
       } catch (e) {

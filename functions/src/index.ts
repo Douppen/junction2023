@@ -211,6 +211,35 @@ export const runAfterOnboardingComplete = onCall(async (req) => {
   });
 });
 
+export const addPainInput = onCall(async (req) => {
+  const user = req.auth;
+  const { painLevel, description } = req.data;
+
+  if (!user) {
+    return {
+      error: "not authed",
+    }
+  }
+
+  const userDoc = await getFirestore().collection('users').doc(user.uid).get();
+  const userDocData = userDoc.data();
+
+  await getFirestore().collection('users').doc(user.uid)
+    .collection('painLevels').add({painLevel: painLevel, date: new Date()})
+
+  await getFirestore().collection('users').doc(user.uid).update({...userDocData, updateTime: new Date()})
+
+
+  const threadId = userDocData.assistantThreadId;
+  if (!threadId) {
+    return {
+      error: 'no thread id',
+    };
+  }
+
+  await addMessageToThread(threadId, description)
+})
+
 export const addMessageToAssistantThread = onCall(async (req) => {
   const user = req.auth;
   const { message } = req.data;
@@ -353,27 +382,29 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
  */
 export const receiveMMSAudio = onCall(async (req: Request) => {
   try {
-    const openai = new OpenAI({ apiKey: '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' });
     const { audioUrl, from } = req.data
+    console.log(from)
+
+    const db = getFirestore();
+    const snap = await db.collection('users').where("onboarding.phoneNumber", "==", from).get();
+
+    if (snap.empty) {
+      return { error: 400, raw: "invalid request, no such user" };
+    }
+
+    let user = undefined
+    snap.forEach(u => user = u.data())
+
+    const openai = new OpenAI({ apiKey: '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' });
     const audio = await fetch(audioUrl)
     const transcriptions = await openai.audio.transcriptions.create({
       file: await toFile(audio, "audio.mp3"),
       model: 'whisper-1'
     })
 
-    console.log(from)
-
-    const db = getFirestore();
-    const snap = await db.collection('users').where("phoneNumber", "==", from).get();
-    if (snap.empty) {
-      return { error: 404, raw: "invalid request, no such user" };
-    }
-
-    let user = undefined
-    snap.forEach(u => user = u.data())
     await addMessageToThread(user?.assistantThreadId, transcriptions.text)
     return { transcription: transcriptions.text }
   } catch {
-    return { error: 404, raw: "invalid request" };
+    return { error: 400, raw: "invalid request" };
   }
 })
