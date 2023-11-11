@@ -4,14 +4,19 @@ As stated in the challenge the goal was to develop a digital solution to enchane
 From the hackerpack we also decided to use the [46elks](https://46elks.com/) API
 ## Description
 Restorative is a web application that allows users that experience chronic pain to track it and get feedback using artifical intelligence  
+  
 **The main features are the following**  
 ### Seemless speech and text input
 The user can create an account and inputs relevant data which is stored in the model. After the account is created the user can input data on the dashboard. The user can on the dashboard input a general state of main and how they feel. The OpenAI API assistant will store each input and base other functionality in the application on these inputs. This allows the user to get a continously improving and more personalized assistant. The user also inputs their pain level. The dashboard also has an speech input.  
   
-The MMS implemenation is currently in mock when it comes to speech input due to the impossiblity of sending audio files over 46elks. The user can however make an input Using SMS and will be sent a reminder (once a day) if they forget to report their pain level.
+The MMS implemenation is currently in mock when it comes to speech input due to the impossiblity of sending audio files over 46elks. The user can however make an input Using SMS and will be sent a reminder (once a day) if they forget to report their pain level.  
+  
 ### Responsive chatting
+Currently mocked! 
 ### Data visualization
+The latest pain inputs are organized on the dashboard in an interactive bar chart.
 ### AI powered personal insights
+Currently mocked! 
 ### Technical implementation
 
 
