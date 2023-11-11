@@ -169,6 +169,7 @@ export const addPainInput = onCall(async (req) => {
   const userDoc = await getFirestore().collection('users').doc(user.uid).get();
   const userDocData = userDoc.data();
 
+  // for graph
   await getFirestore()
     .collection('users')
     .doc(user.uid)
@@ -237,8 +238,8 @@ export const chattingFunctionality = onCall(async (req) => {
 
     if (!message) {
       return {
-        error: "no message provided"
-      }
+        error: 'no message provided',
+      };
     }
 
     const userDoc = await getFirestore().collection('users').doc(user.uid).get();
@@ -267,6 +268,7 @@ export const chattingFunctionality = onCall(async (req) => {
     /*
   Implementing the code that waits for the response
   */
+
     let status = 'queued';
     var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
 
@@ -278,7 +280,8 @@ export const chattingFunctionality = onCall(async (req) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
     const messages = await openai.beta.threads.messages.list(threadId);
-    return { message: messages.data.at(0).content.at(0).text.value }
+    const latestMessageStr = messages?.body?.data[0]?.content[0]?.text?.value ?? 'Error in backend';
+    return { message: latestMessageStr };
   } catch (e) {
     logger.error('error');
   }

@@ -8,7 +8,7 @@ type InputProps = {
   listening?: boolean;
 } & React.ComponentPropsWithoutRef<'input'>;
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
   ({ onChange, value, label, error, listening, speechRecog, onMicChange, ...props }, ref) => {
     const [hasText, setHasText] = useState(value ? true : false);
 
@@ -36,7 +36,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {speechRecog && onMicChange && (
             <button
               type="button"
-              className="text-neutral-400 absolute -left-8"
+              className="text-neutral-400 absolute -left-9"
               onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
             >
               {listening ? (
@@ -56,12 +56,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               )}
             </button>
           )}
-          <input
+          <textarea
             {...props}
+            rows={1}
             ref={ref}
             value={value}
             onChange={handleChange}
-            className={`placeholder:font-bold w-full placeholder:text-neutral-400 text-2xl sm:text-3xl outline-none disabled:bg-white ${
+            className={`placeholder:font-bold w-full placeholder:text-neutral-400 text-2xl sm:text-3xl outline-none bg-gray-300 disabled:bg-white ${
               !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
             }`}
           />

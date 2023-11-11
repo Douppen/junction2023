@@ -190,7 +190,7 @@ const InputForm = () => {
       <div className="px-4 md:px-12 -mt-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
-            <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
+            {/* <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
               <button
                 type="button"
                 className="relative whitespace-nowrap inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
@@ -204,7 +204,7 @@ const InputForm = () => {
               >
                 Assistant chat
               </button>
-            </span>
+            </span> */}
             {inputs.map((input, index) => {
               if (index === currentInputIndex) {
                 return (
@@ -215,7 +215,7 @@ const InputForm = () => {
                       speechRecog
                       onMicChange={(shouldListen) => {
                         if (shouldListen) {
-                          SpeechRecognition.startListening();
+                          SpeechRecognition.startListening({ continuous: true });
                         } else {
                           SpeechRecognition.stopListening();
                         }
