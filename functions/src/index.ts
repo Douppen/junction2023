@@ -79,6 +79,27 @@ export const CreateGeneralAssistant = onCall(async (req) => {
             },
           },
         },
+        {
+          type: 'function',
+          function: {
+            name: 'get_activities',
+            description: 'Get a list of activities of what the user has done',
+            parameters: {
+              type: 'object',
+              properties: {
+                commands: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    description: 'An activity the user enjoys',
+                  },
+                  description: 'List of activities the user enjoys',
+                },
+              },
+              required: ['commands'],
+            },
+          },
+        }
       ],
       model: 'gpt-4-1106-preview',
     });
