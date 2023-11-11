@@ -1,7 +1,5 @@
-import React from 'react';
-
-
-const About = () => {
+import React, { useEffect } from 'react';
+import axios from 'axios';
 
   const headerStyle = {
     fontFamily: 'roboto,',
