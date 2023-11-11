@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth, useFunctions } from 'reactfire';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { AnimateUp } from '@/components/AnimateUp';
 
 const fields = ['activity_of_the_user', 'trigger', 'body_part', 'vital_information'];
 const requiredFields = ['activity_of_the_user', 'body_part'];
@@ -114,7 +115,7 @@ function Input() {
     );
 
   return (
-    <div className="flex flex-col items-center p-5 w-full">
+    <AnimateUp className="flex flex-col items-center p-5 w-full">
       <div className="w-full max-w-[800px]">
         <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>
           How have you been feeling recently?
@@ -169,7 +170,7 @@ function Input() {
           <span className="loading loading-lg" />
         </div>
       )}
-    </div>
+    </AnimateUp>
   );
 }
 

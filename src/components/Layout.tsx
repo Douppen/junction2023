@@ -83,7 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="pt-20">{children}</div>
+      <div className="pt-20 max-w-[1500px] mx-auto px-4 md:px-12">{children}</div>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useAuth } from 'reactfire';
 import PainChart from '@/components/Painchart';
+import { AnimateUp } from '@/components/AnimateUp';
 
 function Dashboard() {
   const auth = useAuth();
@@ -8,7 +9,7 @@ function Dashboard() {
   const displayName = auth.currentUser?.displayName;
 
   return (
-    <div className="">
+    <AnimateUp className="">
       <div className="flex flex-col items-center">
         <div className="my-40 flex flex-col text-center">
           <h1 className="font-bold mb-4 text-4xl">Welcome back{displayName ? `, ${displayName}!` : '!'}</h1>
@@ -26,7 +27,7 @@ function Dashboard() {
           <p style={{ fontSize: '24px', marginBottom: '2px' }}>Based on your personal data, it seems like swimming is an effective paint mitigator!</p>
         </div>
       </div>
-    </div>
+    </AnimateUp>
   );
 }
 
