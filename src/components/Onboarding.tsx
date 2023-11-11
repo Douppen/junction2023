@@ -109,13 +109,7 @@ export const OnBoardingForm = () => {
     } else {
       const ref = doc(db, 'users', user.data!.uid);
       try {
-        const updatePromise = updateDoc(ref, {
-          onboarding: {
-            ...formData,
-          },
-        });
-
-        const delayPromise = Promise.all([updatePromise, new Promise((resolve) => setTimeout(resolve, 1800))]);
+        const delayPromise = new Promise((resolve) => setTimeout(resolve, 1800));
 
         toast.promise(delayPromise, {
           loading: 'Initializing...',
@@ -123,7 +117,13 @@ export const OnBoardingForm = () => {
         });
 
         delayPromise.then(() => {
-          router.push('/dashboard');
+          updateDoc(ref, {
+            onboarding: {
+              ...formData,
+            },
+          }).then(() => {
+            router.push('/dashboard');
+          });
         });
       } catch (e) {
         toast.error('Something went wrong, please try again');
@@ -158,8 +158,13 @@ export const OnBoardingForm = () => {
   ] as const;
 
   return (
-    <div className="h-[80vh] bg-white flex flex-col justify-center">
-      <div className="pl-12">
+    <div
+      className="h-screen flex flex-col justify-center"
+      onClick={() => {
+        form.setFocus(inputs[currentInputIndex].name);
+      }}
+    >
+      <div className="pl-12 ">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {inputs.map((input, index) => {

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { UserDocData } from '@/types';
 import { User } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
+import { OnBoardingForm } from './Onboarding';
 
 export const Wrappers = ({ children }: { children: React.ReactNode }) => {
   return <AuthWrapper>{children}</AuthWrapper>;
@@ -11,23 +12,20 @@ export const Wrappers = ({ children }: { children: React.ReactNode }) => {
 
 export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const singinCheck = useSigninCheck();
-  const router = useRouter();
-
-  return <>{children}</>;
 
   if (singinCheck.status === 'error') {
     return <div>Error: {singinCheck.error?.message}</div>;
   }
 
   if (singinCheck.status === 'loading') {
-    return <div>Loading...</div>;
+    return null;
   }
 
   if (!singinCheck.data.user) {
     return <Login />;
   }
 
-  // return <OnboardingWrapper user={singinCheck.data.user}>{children}</OnboardingWrapper>;
+  return <OnboardingWrapper user={singinCheck.data.user}>{children}</OnboardingWrapper>;
 };
 
 export const OnboardingWrapper = ({ children, user }: { children: React.ReactNode; user: User }) => {
@@ -42,16 +40,11 @@ export const OnboardingWrapper = ({ children, user }: { children: React.ReactNod
     return null;
   }
 
-  const data = userDocData.data as UserDocData;
+  const data = userDocData.data;
 
-  // if (!data.onboardingData) {
-  //   return <OnBoardingForm />;
-  // }
+  if (!data.onboarding) {
+    return <OnBoardingForm />;
+  }
 
-  return (
-    <div>
-      {/* <p>onboarding data: {JSON.stringify(data.onboardingData)}</p> */}
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 };
