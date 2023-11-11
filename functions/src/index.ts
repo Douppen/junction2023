@@ -13,7 +13,7 @@ initializeApp();
 const DEFAULT_REGION = 'europe-west1';
 setGlobalOptions({ region: DEFAULT_REGION });
 
-const ASSISTANT_ID = 'asst_NezWZ2Y7NEgsLR2dGCOA2Ci1';
+const ASSISTANT_ID = 'asst_jnXpys0Im8gYu1x7F5VmZkGR';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';
 
 export const CreateGeneralAssistant = onCall(async (req) => {
@@ -99,7 +99,7 @@ export const CreateGeneralAssistant = onCall(async (req) => {
               required: ['activities'],
             },
           },
-        }
+        },
       ],
       model: 'gpt-4-1106-preview',
     });
@@ -157,7 +157,7 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     ],
   });
 
-  const run = await openai.beta.threads.runs.create(thread.id, { assistant_id: JSON_ASSISTANT_ID });
+  const run = await openai.beta.threads.runs.create(thread.id, { assistant_id: ASSISTANT_ID });
 
   let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
   let completed = runStatus.status === 'completed';
@@ -166,6 +166,7 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
     completed = runStatus.status === 'completed';
     logger.log(`Run status: ${runStatus.status}`);
+    logger.log('Run: ' + runStatus.required_action);
     // Add a delay before checking again (e.g., every few seconds)
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
