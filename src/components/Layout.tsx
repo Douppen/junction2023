@@ -12,7 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <main>
       <div className="navbar bg-base-100">
         <div className="flex-1 gap-4">
-          {['Dashboard', 'Input', 'Chat', 'Onboarding'].map((item) => (
+          {['Dashboard', 'Input', 'Chat', 'Onboarding', 'Login'].map((item) => (
             <Link
               key={item}
               className={`btn btn-ghost normal-case text-xl ${
@@ -24,7 +24,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </div>
-        <div className="flex-none">
+        <div className="flex gap-1">
+          {signinCheck.data?.user?.photoURL && (
+            <div className="avatar">
+              <div className="w-10 rounded-full">
+                <img src={signinCheck.data?.user?.photoURL} />
+              </div>
+            </div>
+          )}
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-square btn-ghost">
               <svg fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
