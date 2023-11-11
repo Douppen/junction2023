@@ -23,37 +23,11 @@ function Dashboard() {
     <AnimateUp className="">
       <div className="grid grid-cols-[1fr_auto]">
         <div className="h-[90vh]">
-          <div>
-            <ReactMediaRecorder
-              audio
-              render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
-                <div>
-                  <p>{status}</p>
-                  <button onClick={startRecording}>Start Recording</button>
-                  <button onClick={stopRecording}>Stop Recording</button>
-                  <video src={mediaBlobUrl} controls autoPlay loop />
-                </div>
-              )}
-            />
-          </div>
-          <span className="isolate inline-flex rounded-full shadow-sm mb-5">
-            <button
-              type="button"
-              className="relative inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              Pain log
-            </button>
-
-            <button
-              type="button"
-              className="relative -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              Assistant chat
-            </button>
-          </span>
           <InputForm />
         </div>
-        <div className="flex items-center -mt-20">{/* <PainChart /> */}</div>
+        <div className="flex items-center -mt-20">
+          <PainChart />
+        </div>
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
           <p style={{ fontSize: '24px', marginBottom: '2px' }}>
@@ -74,8 +48,8 @@ const InputForm = () => {
   const displayName = auth.currentUser?.displayName;
 
   const schema = z.object({
-    text: z.string().max(100).optional(),
-    painLevel: z.string().max(100).optional(),
+    text: z.string().max(1000).optional(),
+    painLevel: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof schema>>({
@@ -194,6 +168,16 @@ const InputForm = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // const handleSave = async () => {
+  //   const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
+  //   const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
+  //   const formData = new FormData(); // preparing to send to the server
+
+  //   formData.append('file', audioFile); // preparing to send to the server
+
+  //   onSaveAudio(formData); // sending to the server
+  // };
+
   return (
     <div
       className="h-full pb-20 flex flex-col justify-center"
@@ -201,9 +185,37 @@ const InputForm = () => {
         form.setFocus(inputs[currentInputIndex]?.name);
       }}
     >
-      <div className="px-4 md:px-12 -mt-8">
+      <div className="px-4 md:px-12 -mt-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
+            {/* <div>
+              <ReactMediaRecorder
+                audio
+                render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+                  <div>
+                    <p>{status}</p>
+                    <button onClick={startRecording}>Start Recording</button>
+                    <button onClick={stopRecording}>Stop Recording</button>
+                    <audio src={mediaBlobUrl} controls />
+                  </div>
+                )}
+              />
+            </div> */}
+            <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
+              <button
+                type="button"
+                className="relative whitespace-nowrap inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+              >
+                Pain log
+              </button>
+
+              <button
+                type="button"
+                className="relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+              >
+                Assistant chat
+              </button>
+            </span>
             {inputs.map((input, index) => {
               if (index === currentInputIndex) {
                 return (
