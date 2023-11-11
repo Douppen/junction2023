@@ -131,6 +131,7 @@ function PainChart() {
             scaleType: 'band',
           },
         ]}
+        yAxis={[{min: 0, max: 10}]}
         series={[
           {
             data: data.map((d) => d.pain),
