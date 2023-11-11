@@ -14,6 +14,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <div className="navbar bg-base-100">
         <div className="flex items-center justify-between w-full">
           <img src="/logo.png" alt="Logo" width="50" height="50" style={{ marginLeft: '10px' }} />
+          <h1 className="text-3xl font-bold">Restorative</h1>
 
         <div className="flex items-center space-x-4 mr-20">
           {['Dashboard', 'Input', 'Chat', 'About'].map((item) => (

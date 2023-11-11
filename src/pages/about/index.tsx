@@ -35,10 +35,6 @@ const About = () => {
         Restorative is here to support your journey. Our user-friendly interface makes it easy to log your
         experiences, identify patterns, and discover effective strategies for chronic pain relief.
       </p>
-      <p className=" text-2xl">
-        Join the Restorative community today and embark on a path towards a more comfortable and fulfilling life.
-        Together, we can make strides in chronic pain relief, one insight at a time.
-      </p>
     </div>
   );
 };
