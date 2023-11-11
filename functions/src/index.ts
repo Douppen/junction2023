@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 import { onCall } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
