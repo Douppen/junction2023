@@ -83,12 +83,13 @@ export const AssistantPainInputToJSON = onCall(async (req) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   const messages = await openai.beta.threads.messages.list(thread.id);
+  const content = messages.data[0].content;
 
   let json = {};
   try {
-    json = JSON.parse(messages.data[0].content);
+    json = JSON.parse(content);
   } catch (error) {
-    json = { error: true };
+    json = { error: true, raw: content };
   }
 
   return json;

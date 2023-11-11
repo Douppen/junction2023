@@ -20,8 +20,10 @@ function Input() {
   const [value, setValue] = useState('');
   const [prevInputs, setPrevInputs] = useState<InputSchema[]>([]);
   const [painLevel, setPainLevel] = useState(0);
-
   const [response, setResponse] = useState<object>({});
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  const userDocumentLoading = status === 'loading';
 
   const painInputToJSON = httpsCallable(useFunctions(), 'AssistantPainInputToJSON');
 
@@ -41,20 +43,24 @@ function Input() {
     }
   }, [data, status]);
 
-  const loading = status === 'loading';
-
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setSubmitLoading(true);
+
+    const res: any = await painInputToJSON({
+      description: value,
+    });
+
+    if (res.error) {
+    }
 
     update({
       inputs: [...prevInputs, { description: value, painLevel, date: new Date().toISOString(), fields: {} }],
     });
 
-    const res: object = await painInputToJSON({
-      description: value,
-    });
-
     setResponse(res);
+    setSubmitLoading(false);
 
     /*
     const res = await OpenAIAssistantPainInputFunction({
@@ -80,7 +86,7 @@ function Input() {
     */
   };
 
-  if (loading)
+  if (userDocumentLoading)
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-5">
         <span className="loading loading-spinner loading-lg" />
@@ -95,8 +101,8 @@ function Input() {
         </h1>
         <p style={{ fontSize: '24px', marginBottom: '2px' }}>Describe your recent pain level to track your progress.</p>
         <p style={{ fontSize: '24px', marginBottom: '80px' }}>
-          Rate your pain level on a scale from 1-5, describe the area of pain and feel free to add more context in the
-          text box.
+          Rate your pain level on a scale from 1 to 5, describe the area of pain and feel free to add more context in
+          the text box.
         </p>
         <form className="flex flex-col items-center gap-5" onSubmit={onSubmit}>
           <div className="w-full">
@@ -138,6 +144,11 @@ function Input() {
           {JSON.stringify(response)}
         </form>
       </div>
+      {submitLoading && (
+        <div className="w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-20 flex items-center justify-center">
+          <span className="loading loading-lg" />
+        </div>
+      )}
     </div>
   );
 }

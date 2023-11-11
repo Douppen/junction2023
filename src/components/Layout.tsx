@@ -14,23 +14,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between w-full">
           <img src="/logo.png" alt="Logo" width="50" height="50" style={{ marginLeft: '10px' }} />
 
-          <div className="flex-1" />
-
-          <div className="flex space-x-4">
-            {['Dashboard', 'Input', 'Chat'].map((item) => (
-              <Link
-                key={item}
-                className={`btn btn-ghost normal-case text-xl ${
-                  pathname === `/${item.toLowerCase()}` ? 'btn-active' : ''
-                }`}
-                href={`/${item.toLowerCase()}`}
-              >
-                {item}
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex items-center space-x-4 mr-20">
+          <div className="flex items-center space-x-4">
             {['Dashboard', 'Input', 'Chat'].map((item) => (
               <Link
                 key={item}
