@@ -114,15 +114,6 @@ export const CreateGeneralAssistant = onCall(async (req) => {
     logger.error(e);
   }
 });
-export const CreatetheSpecificInputAssistant = onCall(async (req) => {
-  new OpenAI({ apiKey: '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' });
-  const assistant = await openai.beta.assistants.create({
-    name: 'Pain Assitant',
-    description: `You are a assistant that from the description provided by the user should define following variables (activity_of_the_user, body_part, vital_information, trigger) the variables should be returned as an json.  `,
-    model: 'gpt-4-1106-preview',
-  });
-  return assistant.id;
-});
 export const OpenAIcompletions = onCall(async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
@@ -138,52 +129,6 @@ export const OpenAIcompletions = onCall(async (req) => {
   const { text } = req.data;
 
   return 'Hello from Firebase!' + text;
-});
-
-/*
-Implementing AI chatting for getting the variables separated from the description text
-*/
-/*
-description as input
-*/
-export const AssistantPainInputToJSON = onCall(async (req) => {
-  const openai = new OpenAI({ apiKey: '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' });
-  const { description } = req.data;
-  const thread = await openai.beta.threads.create({
-    messages: [
-      {
-        role: 'user',
-        content: `description: ${description}`,
-      },
-    ],
-  });
-
-  const run = await openai.beta.threads.runs.create(thread.id, { assistant_id: ASSISTANT_ID });
-
-  let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-  let completed = runStatus.status === 'completed';
-
-  while (!completed) {
-    runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-    completed = runStatus.status === 'completed';
-    logger.log(`Run status: ${runStatus.status}`);
-    // Add a delay before checking again (e.g., every few seconds)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-  const messages = await openai.beta.threads.messages.list(thread.id);
-
-  const content = messages.data[0].content[0].text.value;
-
-  const parsed = content.replaceAll('`', '').replaceAll('\n', '').replaceAll('json', '');
-
-  let json = {};
-  try {
-    json = JSON.parse(parsed);
-  } catch (error) {
-    json = { error: true, raw: parsed };
-  }
-
-  return json;
 });
 
 export const CreateUserThread = onCall(async (req) => {
@@ -283,13 +228,17 @@ export const chattingFunctionality = onCall(async (req) => {
     const user = req.auth;
     const { message } = req.data;
 
-    logger.log('message' + message);
-
     if (!user) {
       logger.error('not authed');
       return {
         error: 'not authed',
       };
+    }
+
+    if (!message) {
+      return {
+        error: "no message provided"
+      }
     }
 
     const userDoc = await getFirestore().collection('users').doc(user.uid).get();
@@ -326,12 +275,10 @@ export const chattingFunctionality = onCall(async (req) => {
       status = runStatus.status;
 
       // Add a delay before checking again (e.g., every few seconds)
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
     const messages = await openai.beta.threads.messages.list(threadId);
-    logger.log('here are the messages');
-    // const parsed = JSON.parse(messages);
-    logger.log({ openAIMessages: messages.body.data });
+    return { message: messages.data.at(0).content.at(0).text.value }
   } catch (e) {
     logger.error('error');
   }
