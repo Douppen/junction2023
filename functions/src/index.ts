@@ -13,7 +13,7 @@ initializeApp();
 const DEFAULT_REGION = 'europe-west1';
 setGlobalOptions({ region: DEFAULT_REGION });
 
-const ASSISTANT_ID = 'asst_jnXpys0Im8gYu1x7F5VmZkGR';
+const ASSISTANT_ID = 'asst_i043nPhSRtV7L6fY4phYncFJ';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';
 
 export const CreateGeneralAssistant = onCall(async (req) => {
@@ -24,6 +24,7 @@ export const CreateGeneralAssistant = onCall(async (req) => {
       description: `You should help me with incrementally improving my chronic pain. I would like to get better through novel activities and not have to rely on my pain medication as much.
     I will continuously give you daily updates on my pain level, its location, what I did that day, how active I was, if I tried any therapies, what my diet was like, etc.
     You should be my assistant helping me to get better, and as I give you more information every day, you should be able to help me more and more. `,
+      instructions: `You should answer to the user with concise answers, maximum length 1000 characters`,
       tools: [
         {
           type: 'function',
@@ -199,7 +200,6 @@ export const CreateUserThread = onCall(async (req) => {
   return thread.id;
 });
 
-
 // We create a new GPT assistant thread for the user and pass it some data
 export const runAfterOnboardingComplete = onCall(async (req) => {
   logger.log('onboarding complete');
@@ -217,18 +217,23 @@ export const addPainInput = onCall(async (req) => {
 
   if (!user) {
     return {
-      error: "not authed",
-    }
+      error: 'not authed',
+    };
   }
 
   const userDoc = await getFirestore().collection('users').doc(user.uid).get();
   const userDocData = userDoc.data();
 
-  await getFirestore().collection('users').doc(user.uid)
-    .collection('painLevels').add({painLevel: painLevel, date: new Date()})
+  await getFirestore()
+    .collection('users')
+    .doc(user.uid)
+    .collection('painLevels')
+    .add({ painLevel: painLevel, date: new Date() });
 
-  await getFirestore().collection('users').doc(user.uid).update({...userDocData, updateTime: new Date()})
-
+  await getFirestore()
+    .collection('users')
+    .doc(user.uid)
+    .update({ ...userDocData, updateTime: new Date() });
 
   const threadId = userDocData.assistantThreadId;
   if (!threadId) {
@@ -237,8 +242,8 @@ export const addPainInput = onCall(async (req) => {
     };
   }
 
-  await addMessageToThread(threadId, description)
-})
+  await addMessageToThread(threadId, description);
+});
 
 export const addMessageToAssistantThread = onCall(async (req) => {
   const user = req.auth;
@@ -261,7 +266,7 @@ export const addMessageToAssistantThread = onCall(async (req) => {
     };
   }
 
-  await addMessageToThread(threadId, message)
+  await addMessageToThread(threadId, message);
 });
 
 const addMessageToThread = async (threadId, message) => {
@@ -271,7 +276,7 @@ const addMessageToThread = async (threadId, message) => {
     role: 'user',
     content: message,
   });
-}
+};
 
 export const chattingFunctionality = onCall(async (req) => {
   try {
@@ -332,9 +337,8 @@ export const chattingFunctionality = onCall(async (req) => {
   }
 });
 
-
 // Reduce the bill :))
-const MAX_CONCURRENT = 3
+const MAX_CONCURRENT = 3;
 
 export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
   const db = getFirestore();
@@ -356,9 +360,9 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
       if (user.data().updateTime.toDate().toDateString() != today) {
         console.log(`Sending update to ${user.id}`);
         // TODO: Figure out user phone number
-        const phoneNumber = user.data().phoneNumber
+        const phoneNumber = user.data().phoneNumber;
         if (!phoneNumber) {
-          return
+          return;
         }
         const message = new URLSearchParams({ ...messageData, to: phoneNumber }).toString();
 
@@ -371,40 +375,41 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
           .then((json) => console.log(json))
           .catch((err) => console.log(err));
       }
-    }), MAX_CONCURRENT);
+    }),
+    MAX_CONCURRENT
+  );
 
-    pool.start().then(() => console.log("All reminders sent"))
+  pool.start().then(() => console.log('All reminders sent'));
 });
-
 
 /*
  *  Example request: {"data": {"from": "+35812345678", "audioUrl": "https://eample.org/audio.mp3."}}
  */
 export const receiveMMSAudio = onCall(async (req: Request) => {
   try {
-    const { audioUrl, from } = req.data
-    console.log(from)
+    const { audioUrl, from } = req.data;
+    console.log(from);
 
     const db = getFirestore();
-    const snap = await db.collection('users').where("onboarding.phoneNumber", "==", from).get();
+    const snap = await db.collection('users').where('onboarding.phoneNumber', '==', from).get();
 
     if (snap.empty) {
-      return { error: 400, raw: "invalid request, no such user" };
+      return { error: 400, raw: 'invalid request, no such user' };
     }
 
-    let user = undefined
-    snap.forEach(u => user = u.data())
+    let user = undefined;
+    snap.forEach((u) => (user = u.data()));
 
     const openai = new OpenAI({ apiKey: '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' });
-    const audio = await fetch(audioUrl)
+    const audio = await fetch(audioUrl);
     const transcriptions = await openai.audio.transcriptions.create({
-      file: await toFile(audio, "audio.mp3"),
-      model: 'whisper-1'
-    })
+      file: await toFile(audio, 'audio.mp3'),
+      model: 'whisper-1',
+    });
 
-    await addMessageToThread(user?.assistantThreadId, transcriptions.text)
-    return { transcription: transcriptions.text }
+    await addMessageToThread(user?.assistantThreadId, transcriptions.text);
+    return { transcription: transcriptions.text };
   } catch {
-    return { error: 400, raw: "invalid request" };
+    return { error: 400, raw: 'invalid request' };
   }
-})
+});

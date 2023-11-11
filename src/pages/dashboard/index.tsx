@@ -12,11 +12,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { httpsCallable } from 'firebase/functions';
-import dynamic from 'next/dynamic';
-
-const ReactMediaRecorder = dynamic(() => import('react-media-recorder').then((mod) => mod.ReactMediaRecorder), {
-  ssr: false,
-});
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 function Dashboard() {
   return (
@@ -26,7 +22,7 @@ function Dashboard() {
           <InputForm />
         </div>
         <div className="flex items-center -mt-20">
-          <PainChart />
+          <PainChart />S
         </div>
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
@@ -46,6 +42,8 @@ const InputForm = () => {
   const addPainInput = httpsCallable(useFunctions(), 'addPainInput');
 
   const displayName = auth.currentUser?.displayName;
+
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   const schema = z.object({
     text: z.string().max(1000).optional(),
@@ -71,6 +69,10 @@ const InputForm = () => {
     text: '',
     painLevel: '',
   });
+
+  useEffect(() => {
+    form.setValue('text', transcript);
+  }, [transcript]);
 
   const handleStepSubmit = async (data: z.infer<typeof schema>) => {
     if (currentInputIndex === 0) {
@@ -188,19 +190,6 @@ const InputForm = () => {
       <div className="px-4 md:px-12 -mt-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
-            {/* <div>
-              <ReactMediaRecorder
-                audio
-                render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
-                  <div>
-                    <p>{status}</p>
-                    <button onClick={startRecording}>Start Recording</button>
-                    <button onClick={stopRecording}>Stop Recording</button>
-                    <audio src={mediaBlobUrl} controls />
-                  </div>
-                )}
-              />
-            </div> */}
             <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
               <button
                 type="button"
@@ -223,6 +212,15 @@ const InputForm = () => {
                     <Input
                       type="text"
                       label={input.label}
+                      speechRecog
+                      onMicChange={(shouldListen) => {
+                        if (shouldListen) {
+                          SpeechRecognition.startListening();
+                        } else {
+                          SpeechRecognition.stopListening();
+                        }
+                      }}
+                      listening={listening}
                       error={form.formState.errors[input.name]?.message}
                       placeholder={input.placeholder}
                       {...form.register(input.name)}
