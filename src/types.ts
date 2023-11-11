@@ -9,6 +9,6 @@ export type UserDocData = {
   onboardingData?: OnboardingData;
 };
 
-type OnboardingData = {
+export type OnboardingData = {
   timestampOnboarded: Timestamp;
 };
