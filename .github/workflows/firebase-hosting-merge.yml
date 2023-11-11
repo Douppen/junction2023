@@ -18,3 +18,5 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JUNCTION2023_DATAGRABBARNA }}'
           channelId: live
           projectId: junction2023-datagrabbarna
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
