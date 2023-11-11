@@ -1,7 +1,16 @@
 import Link from 'next/link';
-import { useAuth } from 'reactfire';
+import { useAuth, useFirestore, useUser } from 'reactfire';
 import PainChart from '@/components/Painchart';
 import { AnimateUp } from '@/components/AnimateUp';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { doc, updateDoc } from 'firebase/firestore';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
+import { Input } from '@/components/Input';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 function Dashboard() {
   const auth = useAuth();
@@ -10,18 +19,11 @@ function Dashboard() {
 
   return (
     <AnimateUp className="">
-      <div className="flex flex-col items-center">
-        <div className="my-40 flex flex-col text-center">
-          <h1 className="font-bold mb-4 text-4xl">Welcome back{displayName ? `, ${displayName}!` : '!'}</h1>
-          <p className="text-2xl mb-5">How have you been feeling recently?</p>
-          <Link
-            href="/input"
-            className="self-center bg-stone-700 text-white font-bold hover:opacity-80 transition px-7 text-2xl py-2 rounded-full"
-          >
-            Add entry
-          </Link>
+      <div className="grid grid-cols-[1fr_auto]">
+        <InputForm />
+        <div className="flex items-center -mt-20">
+          <PainChart />
         </div>
-        <PainChart />
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
           <p style={{ fontSize: '24px', marginBottom: '2px' }}>
@@ -34,3 +36,159 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+const InputForm = () => {
+  const auth = useAuth();
+
+  const displayName = auth.currentUser?.displayName;
+
+  const schema = z.object({
+    text: z.string().max(100).optional(),
+    painLevel: z.string().max(100).optional(),
+  });
+
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      text: '',
+      painLevel: '',
+    },
+  });
+
+  const db = useFirestore();
+  const user = useUser();
+  const [currentInputIndex, setCurrentInputIndex] = useState<number>(0);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  useEffect(() => {
+    form.setFocus(inputs[currentInputIndex]?.name);
+  }, [currentInputIndex]);
+
+  const [formData, setFormData] = useState({
+    text: '',
+    ageYears: '',
+  });
+
+  const handleStepSubmit = async (data: z.infer<typeof schema>) => {
+    if (currentInputIndex === 0) {
+      const text = data.text!;
+      if (text.length < 20) {
+        form.setError('text', { message: 'Please enter a description of at least 20 characters' });
+        return;
+      }
+    }
+
+    if (currentInputIndex === 1) {
+      const painLevel = data.painLevel!;
+      if (painLevel.length === 0) {
+        form.setError('painLevel', { message: 'Please enter a valid number' });
+        return;
+      }
+      const parsedInt = parseInt(painLevel);
+
+      if (isNaN(parsedInt)) {
+        form.setError('painLevel', { message: 'Please enter a valid number' });
+        return;
+      }
+
+      if (parsedInt > 10) {
+        form.setError('painLevel', { message: 'Please enter a number between 0 and 10' });
+        return;
+      }
+      if (parsedInt < 0) {
+        form.setError('painLevel', { message: 'Please enter a number between 0 and 10' });
+        return;
+      }
+    }
+
+    // Update formData with new values
+    setFormData((prevFormData) => ({ ...prevFormData, ...data }));
+
+    // Check if it's the last input, otherwise move to the next step
+    if (currentInputIndex < inputs.length - 1) {
+      setCurrentInputIndex(currentInputIndex + 1);
+    } else {
+      const ref = doc(db, 'users', user.data!.uid);
+      try {
+        setCurrentInputIndex(-1);
+        const delayPromise = new Promise((resolve) => setTimeout(resolve, 1800));
+
+        toast.promise(delayPromise, {
+          loading: 'Recording your log...',
+          success: 'Done!',
+        });
+
+        delayPromise.then(() => {
+          form.reset();
+          setHasSubmitted(true);
+          setCurrentInputIndex(0);
+        });
+      } catch (e) {
+        toast.error('Something went wrong, please try again');
+      }
+    }
+  };
+  const inputs = [
+    {
+      name: 'text',
+      label: !hasSubmitted ? `Welcome${displayName ? `, ${displayName}.` : '.'}` : 'Thank you for your input.',
+      placeholder: !hasSubmitted ? 'How have you been feeling recently?' : 'Write another log?',
+    },
+    {
+      name: 'painLevel',
+      label: 'How much pain did you feel today on average?',
+      placeholder: 'Enter a number between 0 and 10.',
+    },
+  ] as const;
+
+  const [dots, setDots] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => {
+        if (prev === 3) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 300); // Change the dot every 500ms
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      className="h-[90vh] pb-20 flex flex-col justify-center"
+      onClick={() => {
+        form.setFocus(inputs[currentInputIndex]?.name);
+      }}
+    >
+      <div className="px-4 md:px-12">
+        <form onSubmit={form.handleSubmit(handleStepSubmit)}>
+          <div className="form-control w-full">
+            {inputs.map((input, index) => {
+              if (index === currentInputIndex) {
+                return (
+                  <AnimateUp key={input.name} className="relative">
+                    <Input
+                      type="text"
+                      label={input.label}
+                      error={form.formState.errors[input.name]?.message}
+                      placeholder={input.placeholder}
+                      {...form.register(input.name)}
+                    />
+                  </AnimateUp>
+                );
+              }
+            })}
+            {currentInputIndex === -1 && (
+              <AnimateUp className="relative">
+                <Input type="text" disabled label={`Loading${'.'.repeat(dots)}`} />
+              </AnimateUp>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

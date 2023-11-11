@@ -3,7 +3,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <AnimateUp className="">
+    <AnimateUp className="max-w-[120ch] mx-auto">
       <h1 className="font-bold text-6xl mb-5 leading-snug">
         Chronic Pain Relief, <br /> One Insight at a Time.
       </h1>

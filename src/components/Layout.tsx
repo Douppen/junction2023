@@ -11,7 +11,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const [width] = useWindowSize();
 
-  const isMobile = width < 768;
+  const isMobile = width < 1024;
 
   const pageLink = (name: string) => (
     <Link
@@ -27,11 +27,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <main className="px-3">
-      <header className="py-2 fixed top-0 inset-x-0 bg-white z-50">
-        <div className="grid grid-cols-2 md:grid-cols-[2fr_3fr_2fr] w-full">
+    <div className="">
+      <header className="py-2 fixed top-0 inset-x-0 bg-white z-50 max-w-[110rem] mx-auto px-4 md:px-12">
+        <div className="grid grid-cols-2 lg:grid-cols-[2fr_3fr_2fr] w-full">
           <Link href={'/dashboard'} className="flex items-center gap-2 w-min">
-            <img src="/logo.png" alt="Logo" width="50" height="50" style={{ marginLeft: '10px' }} />
+            <img src="/logo.png" alt="Logo" width="40" height="40" style={{ marginLeft: '10px' }} />
             <h1 className="text-3xl font-bold">Restorative</h1>
           </Link>
 
@@ -83,7 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="pt-20 max-w-[1500px] mx-auto px-4 md:px-12">{children}</div>
-    </main>
+      <div className="pt-24 max-w-[110rem] mx-auto px-4 md:px-12">{children}</div>
+    </div>
   );
 }

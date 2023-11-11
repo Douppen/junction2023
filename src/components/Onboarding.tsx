@@ -8,39 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { doc, updateDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
-
-type InputProps = {} & React.ComponentPropsWithoutRef<'input'>;
-
-{
-  /* <label className="label"><span className="label-text">What is your name?</span></label> */
-}
-
-const Input = forwardRef<HTMLInputElement, InputProps>(({ onChange, value, ...props }, ref) => {
-  const [hasText, setHasText] = useState(value ? true : false);
-
-  const handleChange = (e: any) => {
-    if (onChange) {
-      onChange(e);
-    }
-    setHasText(e.target.value.length > 0);
-  };
-
-  useEffect(() => {
-    setHasText(value ? true : false);
-  }, [value]);
-
-  return (
-    <input
-      {...props}
-      ref={ref}
-      value={value}
-      onChange={handleChange}
-      className={`placeholder:font-bold placeholder:text-neutral-400 text-xl sm:text-2xl outline-none ${
-        !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
-      }`}
-    />
-  );
-});
+import { Input } from './Input';
 
 export const OnBoardingForm = () => {
   const schema = z.object({
@@ -198,17 +166,13 @@ export const OnBoardingForm = () => {
                     key={input.name}
                     className="relative"
                   >
-                    <div className="mb-1.5">
-                      <label className="font-bold text-xl sm:text-2xl">
-                        <span>{input.label}</span>
-                      </label>
-                    </div>
-                    <Input type="text" placeholder={input.placeholder} {...form.register(input.name)} />
-                    {form.formState.errors[input.name] && (
-                      <div className="text-sm text-neutral-400 absolute top-[4.5rem] mt-2.5">
-                        {form.formState.errors[input.name]?.message}
-                      </div>
-                    )}
+                    <Input
+                      type="text"
+                      label={input.label}
+                      error={form.formState.errors[input.name]?.message}
+                      placeholder={input.placeholder}
+                      {...form.register(input.name)}
+                    />
                   </motion.div>
                 );
               }

@@ -37,7 +37,7 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
 
   return (
     <AuthProvider sdk={auth}>
-      <Toaster expand position="top-center" />
+      <Toaster expand position="bottom-center" />
       <FirestoreProvider sdk={db}>
         <StorageProvider sdk={storage}>
           <FunctionsProvider sdk={functions}>
