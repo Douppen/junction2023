@@ -45,12 +45,28 @@ export const CreateGeneralAssistant= onCall(async (req) => {
     I will continuously give you daily updates on my pain level, its location, what I did that day, how active I was, if I tried any therapies, what my diet was like, etc.
     The daily updates will be inputted as a json file with variables: (activity_of_the_user, body_part, vital_information, trigger) 
     You should be my assistant helping me to get better, and as I give you more information every day, you should be able to help me more and more. `,
+    tools=[
+      {
+        type: "function",
+        function : 
+        {
+          "name": "get_one_improvement",
+          "description": "Get based on the user input one improvement the user could make when it comes to pain managment",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              },
+           }
+        }
+      }
+    ],
     model: "gpt-4-1106-preview",
-  }
-  )
+  });
   /*
   Create the necessary functions for the AI
   */
+  // Function that return one area of improvement to the AI
+  // Function that return one area of what the user is currently successfull with.
 
   return assistant.id
 })
