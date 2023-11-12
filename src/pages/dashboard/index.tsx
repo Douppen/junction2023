@@ -43,8 +43,8 @@ function Dashboard() {
 
   return (
     <AnimateUp className="lg:pt-20">
-      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-full">
-        <div className="max-lg:min-h-[80vh] max-w-[50rem]">
+      <div className={`grid ${selected === 0 ? 'lg:grid-cols-[3fr_1fr]' : ''} lg:min-h-full`}>
+        <div className={`max-lg:min-h-[80vh] ${selected === 0 ? 'max-w-[50rem]' : 'max-w-[65rem]'}`}>
           <InputForm selected={selected} handleSelected={(n) => setSelected(n)} />
         </div>
         <AnimatePresence>
@@ -268,17 +268,25 @@ const Suggestions = () => {
   const getSuggestions = httpsCallable(useFunctions(), 'chattingFunctionality');
   const [suggestions, setSuggestions] = useState<string[] | null>(null);
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     getSuggestions({
       message: 'Get a list of improvements or suggestions that I could do to decrease my pain',
     }).then((res) => {
       const data = res.data as any | null;
+      if (data.message) {
+        setError(data.message);
+        return;
+      }
       if (data?.commands) {
         setSuggestions(data.commands);
       }
       console.log(res);
     });
   }, []);
+
+  console.log(error);
 
   return (
     <AnimateUp className="relative">
@@ -304,7 +312,7 @@ const Suggestion = (props: { text: string; index: number }) => {
   return (
     <AnimateUp delay={props.index * 0.2}>
       <li className="transition relative w-full overflow-auto resize-none font-medium text-2xl sm:text-3xl text-neutral-800">
-        <span className="relative right-4">{props.text.charAt(0).toUpperCase() + props.text.slice(1)}</span>
+        <span className="">{props.text.charAt(0).toUpperCase() + props.text.slice(1)}</span>
       </li>
     </AnimateUp>
   );

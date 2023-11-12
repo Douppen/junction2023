@@ -14,11 +14,11 @@ initializeApp({
 const ASSISTANT_ID = 'asst_i043nPhSRtV7L6fY4phYncFJ';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';
 
-const API_KEY = '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';
+const openAIKey = process.env.OPENAI_API_KEY;
 
 export const CreateGeneralAssistant = onCall({ region: 'europe-west1' }, async (req) => {
   try {
-    const openai = new OpenAI({ apiKey: API_KEY });
+    const openai = new OpenAI({ apiKey: openAIKey });
     const assistant = await openai.beta.assistants.create({
       name: 'Pain Assitant',
       description: `You should help me with incrementally improving my chronic pain. I would like to get better through novel activities and not have to rely on my pain medication as much.
@@ -115,7 +115,7 @@ export const CreateGeneralAssistant = onCall({ region: 'europe-west1' }, async (
   }
 });
 export const OpenAIcompletions = onCall({ region: 'europe-west1' }, async (req) => {
-  const openai = new OpenAI({ apiKey: API_KEY });
+  const openai = new OpenAI({ apiKey: openAIKey });
   const completion = await openai.completions.create({
     model: 'gpt-3.5-turbo-instruct',
     prompt: 'Say this is a test.',
@@ -133,7 +133,7 @@ export const OpenAIcompletions = onCall({ region: 'europe-west1' }, async (req) 
 
 export const CreateUserThread = onCall({ region: 'europe-west1' }, async (req) => {
   const { userdata } = req.data;
-  const openai = new OpenAI({ apiKey: API_KEY });
+  const openai = new OpenAI({ apiKey: openAIKey });
   const thread = await openai.beta.threads.create({
     messages: [
       {
@@ -149,7 +149,7 @@ export const CreateUserThread = onCall({ region: 'europe-west1' }, async (req) =
 export const runAfterOnboardingComplete = onCall({ region: 'europe-west1' }, async (req) => {
   logger.log('onboarding complete');
   const user = req.auth;
-  const openai = new OpenAI({ apiKey: API_KEY });
+  const openai = new OpenAI({ apiKey: openAIKey });
   const thread = await openai.beta.threads.create();
   await getFirestore().collection('users').doc(user.uid).update({
     assistantThreadId: thread.id,
@@ -218,7 +218,7 @@ export const addMessageToAssistantThread = onCall({ region: 'europe-west1' }, as
 });
 
 const addMessageToThread = async (threadId, message) => {
-  const openai = new OpenAI({ apiKey: API_KEY });
+  const openai = new OpenAI({ apiKey: openAIKey });
 
   await openai.beta.threads.messages.create(threadId, {
     role: 'user',
@@ -257,7 +257,7 @@ export const chattingFunctionality = onCall({ region: 'europe-west1' }, async (r
 
   logger.log('before openai create');
 
-  const openai = new OpenAI({ apiKey: API_KEY });
+  const openai = new OpenAI({ apiKey: openAIKey });
 
   const runs = await openai.beta.threads.runs.list(threadId);
   const a = runs.data;
@@ -389,7 +389,7 @@ export const receiveMMSAudio = onCall({ region: 'europe-west1' }, async (req: Re
     let user = undefined;
     snap.forEach((u) => (user = u.data()));
 
-    const openai = new OpenAI({ apiKey: API_KEY });
+    const openai = new OpenAI({ apiKey: openAIKey });
     const audio = await fetch(audioUrl);
     const transcriptions = await openai.audio.transcriptions.create({
       file: await toFile(audio, 'audio.mp3'),
