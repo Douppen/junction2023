@@ -1,5 +1,5 @@
 import { httpsCallable } from 'firebase/functions';
-import { forwardRef, useEffect, useState, useRef } from 'react';
+import { forwardRef, useEffect, useState, useRef, use } from 'react';
 import { useFirestore, useFunctions, useUser } from 'reactfire';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,6 +41,8 @@ export const OnBoardingForm = () => {
   useEffect(() => {
     form.setFocus(inputs[currentInputIndex].name);
   }, [currentInputIndex]);
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     phoneNumber: '',
@@ -100,6 +102,10 @@ export const OnBoardingForm = () => {
     } else {
       const ref = doc(db, 'users', user.data!.uid);
       try {
+        if (loading) {
+          return;
+        }
+        setLoading(true);
         const delayPromise = new Promise((resolve) => setTimeout(resolve, 1800));
 
         toast.promise(delayPromise, {

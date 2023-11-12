@@ -27,8 +27,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="">
-      <header className="py-2 fixed top-0 inset-x-0 bg-white z-50 max-w-[110rem] mx-auto px-4 md:px-12">
+    <div className="min-h-screen">
+      <header className="py-2 fixed top-0 inset-x-0 bg-white z-50 max-w-[100rem] mx-auto px-4 md:px-12">
         <div className="grid grid-cols-2 lg:grid-cols-[2fr_3fr_2fr] w-full">
           <Link href={'/dashboard'} className="flex items-center gap-2 w-min">
             <img src="/logo.png" alt="Logo" width="40" height="40" style={{ marginLeft: '10px' }} />
@@ -83,7 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="pt-24 max-w-[110rem] mx-auto px-4 md:px-12">{children}</div>
+      <div className="pt-24 max-w-[100rem] mx-auto px-4 md:px-12">{children}</div>
     </div>
   );
 }

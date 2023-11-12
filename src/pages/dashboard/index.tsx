@@ -4,7 +4,7 @@ import PainChart from '@/components/Painchart';
 import { AnimateUp } from '@/components/AnimateUp';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { doc, updateDoc } from 'firebase/firestore';
-import { motion } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { Input } from '@/components/Input';
 import { useState, useEffect } from 'react';
@@ -39,18 +39,14 @@ function Dashboard() {
   Input {temp} where testing testing is currently 
   */
   return (
-    <AnimateUp className="">
-      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-[90vh] pb-12">
-        <div className="max-lg:min-h-[88vh] max-w-3xl">
+    <AnimateUp className="lg:pt-20">
+      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-full">
+        <div className="max-lg:min-h-[80vh] max-w-3xl">
           <InputForm />
         </div>
         <div className="lg:flex items-center">
           <PainChart />
         </div>
-      </div>
-      <div className="my-40">
-        <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
-        <p style={{ fontSize: '24px', marginBottom: '2px' }}>testing testing</p>
       </div>
     </AnimateUp>
   );
@@ -102,6 +98,7 @@ const InputForm = () => {
         form.setError('text', { message: 'Please enter a description of at least 20 characters' });
         return;
       }
+      SpeechRecognition.stopListening();
     }
 
     if (currentInputIndex === 1) {
@@ -184,70 +181,109 @@ const InputForm = () => {
         }
         return prev + 1;
       });
-    }, 300); // Change the dot every 500ms
+    }, 400);
 
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div
-      className="h-full flex flex-col justify-center"
-      onClick={() => {
-        form.setFocus(inputs[currentInputIndex]?.name);
-      }}
-    >
-      <div className="px-4 md:px-12">
-        <form onSubmit={form.handleSubmit(handleStepSubmit)}>
-          <div className="form-control w-full">
-            {/* <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
-              <button
-                type="button"
-                className="relative whitespace-nowrap inline-flex items-center rounded-l-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-              >
-                Pain log
-              </button>
+  const [selected, setSelected] = useState(0);
 
-              <button
-                type="button"
-                className="relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full bg-stone-100 px-3 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-              >
-                Assistant chat
-              </button>
-            </span> */}
-            {inputs.map((input, index) => {
-              if (index === currentInputIndex) {
-                return (
-                  <AnimateUp key={input.name} className="relative">
-                    <Input
-                      isTextArea
-                      type="text"
-                      label={input.label}
-                      speechRecog
-                      onMicChange={(shouldListen) => {
-                        if (shouldListen) {
-                          SpeechRecognition.startListening({ continuous: true });
-                        } else {
-                          SpeechRecognition.stopListening();
-                        }
-                      }}
-                      listening={listening}
-                      error={form.formState.errors[input.name]?.message}
-                      placeholder={input.placeholder}
-                      onSubmit={form.handleSubmit(handleStepSubmit)}
-                      {...form.register(input.name)}
-                    />
-                  </AnimateUp>
-                );
-              }
-            })}
-            {currentInputIndex === -1 && (
-              <AnimateUp className="relative">
-                <Input type="text" disabled label={`Loading${'.'.repeat(dots)}`} />
-              </AnimateUp>
-            )}
-          </div>
-        </form>
+  return (
+    <div className="h-full">
+      <div
+        className="h-full flex flex-col justify-center"
+        onClick={() => {
+          form.setFocus(inputs[currentInputIndex]?.name);
+        }}
+      >
+        <div className="px-4 md:px-12">
+          <form onSubmit={form.handleSubmit(handleStepSubmit)}>
+            <div className="form-control w-full">
+              <span className="isolate inline-flex rounded-md w-min shadow-sm mb-4">
+                <LayoutGroup>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelected(0);
+                    }}
+                    className={`${
+                      selected === 0 && 'bg-gray-100'
+                    } transition relative whitespace-nowrap inline-flex items-center rounded-l-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
+                  >
+                    Pain logger
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(1)}
+                    className={`${
+                      selected === 1 && 'bg-gray-100'
+                    } transition relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
+                  >
+                    Suggestions
+                  </button>
+                </LayoutGroup>
+              </span>
+              {inputs.map((input, index) => {
+                if (index === currentInputIndex && selected === 0) {
+                  return (
+                    <AnimateUp key={input.name} className="relative">
+                      <Input
+                        isTextArea
+                        type="text"
+                        label={input.label}
+                        speechRecog
+                        onMicChange={(shouldListen) => {
+                          if (shouldListen) {
+                            SpeechRecognition.startListening({ continuous: true });
+                          } else {
+                            SpeechRecognition.stopListening();
+                          }
+                        }}
+                        listening={listening}
+                        error={form.formState.errors[input.name]?.message}
+                        placeholder={input.placeholder}
+                        onSubmit={form.handleSubmit(handleStepSubmit)}
+                        {...form.register(input.name)}
+                      />
+                    </AnimateUp>
+                  );
+                }
+              })}
+              {currentInputIndex === -1 && selected === 0 && (
+                <AnimateUp className="relative">
+                  <Input type="text" disabled label={`Loading${'.'.repeat(dots)}`} />
+                </AnimateUp>
+              )}
+              {selected === 1 && (
+                <AnimateUp className="relative">
+                  <div className="mb-1.5">
+                    <label className="font-bold text-2xl sm:text-3xl">
+                      <span>Suggestions</span>
+                    </label>
+                  </div>
+                  <div className="space-y-1.5">
+                    {['Go for a walk', 'You should continue swimming', 'I think you should try hot yoga'].map(
+                      (text, i) => {
+                        return <Suggestion text={text} index={i} />;
+                      }
+                    )}
+                  </div>
+                </AnimateUp>
+              )}{' '}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+  );
+};
+
+const Suggestion = (props: { text: string; index: number }) => {
+  return (
+    <AnimateUp delay={props.index * 0.2}>
+      <li className="transition relative w-full overflow-auto resize-none font-bold text-2xl sm:text-3xl text-neutral-400">
+        {props.text}
+      </li>
+    </AnimateUp>
   );
 };
