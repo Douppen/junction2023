@@ -3,7 +3,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div className="h-[80vh] flex items-center">
+    <div className="min-h-[80vh] flex items-center">
       <AnimateUp className="max-w-[100ch] mx-auto">
         <h1 className="font-bold text-5xl mb-8 leading-[1.2]">
           Chronic Pain Relief,

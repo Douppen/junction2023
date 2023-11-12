@@ -40,7 +40,7 @@ function Dashboard() {
   */
   return (
     <AnimateUp className="">
-      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-[95vh]">
+      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-[90vh] pb-12">
         <div className="max-lg:min-h-[88vh] max-w-3xl">
           <InputForm />
         </div>
@@ -191,7 +191,7 @@ const InputForm = () => {
 
   return (
     <div
-      className="h-full pb-20 flex flex-col justify-center"
+      className="h-full flex flex-col justify-center"
       onClick={() => {
         form.setFocus(inputs[currentInputIndex]?.name);
       }}

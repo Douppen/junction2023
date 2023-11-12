@@ -26,7 +26,7 @@ export const Login = () => {
           provider: credential?.providerId,
         };
 
-        await setDoc(doc(db, 'users', user.uid), data);
+        await setDoc(doc(db, 'users', user.uid), data, { merge: true });
 
         router.push('/');
       })

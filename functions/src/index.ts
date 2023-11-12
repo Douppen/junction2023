@@ -223,66 +223,70 @@ const addMessageToThread = async (threadId, message) => {
 };
 
 export const chattingFunctionality = onCall({ region: 'europe-west1' }, async (req) => {
-  try {
-    const user = req.auth;
-    const { message } = req.data;
+  const user = req.auth;
+  const { message } = req.data;
 
-    if (!user) {
-      logger.error('not authed');
-      return {
-        error: 'not authed',
-      };
-    }
+  if (!user) {
+    logger.error('not authed');
+    return {
+      error: 'not authed',
+    };
+  }
 
-    if (!message) {
-      return {
-        error: 'no message provided',
-      };
-    }
+  if (!message) {
+    return {
+      error: 'no message provided',
+    };
+  }
 
-    const userDoc = await getFirestore().collection('users').doc(user.uid).get();
-    const userDocData = userDoc.data();
+  const userDoc = await getFirestore().collection('users').doc(user.uid).get();
+  const userDocData = userDoc.data();
 
-    const threadId = userDocData.assistantThreadId;
+  const threadId = userDocData.assistantThreadId;
 
-    if (!threadId) {
-      logger.error('no thread id');
-      return {
-        error: 'no thread id',
-      };
-    }
+  if (!threadId) {
+    logger.error('no thread id');
+    return {
+      error: 'no thread id',
+    };
+  }
 
-    const openai = new OpenAI({ apiKey: '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' });
+  logger.log('before openai create');
 
-    await openai.beta.threads.messages.create(threadId, {
-      role: 'user',
-      content: message,
-    });
+  const openai = new OpenAI({ apiKey: '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' });
 
-    const run = await openai.beta.threads.runs.create(threadId, {
-      assistant_id: ASSISTANT_ID,
-      instructions: 'You should answer the users question',
-    });
-    /*
+  await openai.beta.threads.messages.create(threadId, {
+    role: 'user',
+    content: message,
+  });
+
+  logger.log('after thread create');
+
+  const run = await openai.beta.threads.runs.create(threadId, {
+    assistant_id: ASSISTANT_ID,
+    instructions: 'You should answer the users question',
+  });
+  /*
   Implementing the code that waits for the response
   */
 
-    let status = 'queued';
-    var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+  let status = 'queued';
+  var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
 
-    while (status !== 'completed') {
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
-      status = runStatus.status;
+  logger.log('before while');
 
-      // Add a delay before checking again (e.g., every few seconds)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-    const messages = await openai.beta.threads.messages.list(threadId);
-    const latestMessageStr = messages?.body?.data[0]?.content[0]?.text?.value ?? 'Error in backend';
-    return { message: latestMessageStr };
-  } catch (e) {
-    logger.error('error');
+  while (status !== 'completed') {
+    runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    status = runStatus.status;
+
+    // Add a delay before checking again (e.g., every few seconds)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
+  logger.log('after while');
+
+  const messages = await openai.beta.threads.messages.list(threadId);
+  const latestMessageStr = messages?.body?.data[0]?.content[0]?.text?.value ?? 'Error in backend';
+  return { message: latestMessageStr };
 });
 
 // Reduce the bill :))

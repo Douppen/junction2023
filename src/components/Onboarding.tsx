@@ -115,8 +115,8 @@ export const OnBoardingForm = () => {
             },
           }).then(() => {
             afterOnboarding().then(() => {
-                router.push('/dashboard');
-            })
+              router.push('/dashboard');
+            });
           });
         });
       } catch (e) {
@@ -154,7 +154,7 @@ export const OnBoardingForm = () => {
 
   return (
     <div
-      className="h-screen flex flex-col justify-center"
+      className="min-h-screen flex flex-col justify-center"
       onClick={() => {
         form.setFocus(inputs[currentInputIndex].name);
       }}

@@ -3,12 +3,15 @@ import _ from 'lodash';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useWindowSize } from '@/lib/utils';
-import { useAuth } from 'reactfire';
+import { useAuth, useFirestoreCollectionData } from 'reactfire';
 import { useEffect, useState } from 'react';
 import { useFirestore } from 'reactfire';
 
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/router';
+import { AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { AnimateUp } from './AnimateUp';
 
 export type painLevelData = {
   painLevel: number;
@@ -85,12 +88,13 @@ function PainChart() {
   }
 
   const db = useFirestore();
-
   const [data, setData] = useState(new Array());
+
+  const painLevelRef = collection(doc(collection(db, 'users'), auth.currentUser.uid), 'painLevels');
+  const painLevelsCol = useFirestoreCollectionData(painLevelRef);
 
   useEffect(() => {
     const getData = async () => {
-      const painLevelRef = collection(doc(collection(db, 'users'), auth.currentUser?.uid), 'painLevels');
       const painLevels = await getDocs(painLevelRef);
       const painLevelData: painLevelData[] = [];
       painLevels.forEach((p) => {
@@ -106,38 +110,44 @@ function PainChart() {
     };
 
     getData();
-  });
+  }, [painLevelsCol.data]);
 
   const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   const theme = createTheme({ palette: { mode } });
 
   const [width] = useWindowSize();
 
-  if (data.length == 0) {
-    return;
-  }
-
   return (
-    <ThemeProvider theme={theme}>
-      <BarChart
-        xAxis={[
-          {
-            id: 'barCategories',
-            data: data.map((d) => d.date.toDateString()),
-            scaleType: 'band',
-          },
-        ]}
-        yAxis={[{ min: 0, max: 10 }]}
-        series={[
-          {
-            data: data.map((d) => d.pain),
-            label: 'Average pain level',
-          },
-        ]}
-        width={Math.min(width, 400)}
-        height={480}
-      />
-    </ThemeProvider>
+    <AnimatePresence>
+      {data.length === 0 ? (
+        <motion.div className="h-[18rem] xl:h-[24rem] aspect-[4/3] bg-neutral-100 text-neutral-400 rounded-xl flex items-center justify-center">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
+            Write your first log to view the graph
+          </motion.p>
+        </motion.div>
+      ) : (
+        <ThemeProvider theme={theme}>
+          <BarChart
+            xAxis={[
+              {
+                id: 'barCategories',
+                data: data.map((d) => d.date.toDateString()),
+                scaleType: 'band',
+              },
+            ]}
+            yAxis={[{ min: 0, max: 10 }]}
+            series={[
+              {
+                data: data.map((d) => d.pain),
+                label: 'Average pain level',
+              },
+            ]}
+            width={Math.min(width - 630, 700)}
+            height={480}
+          />
+        </ThemeProvider>
+      )}
+    </AnimatePresence>
   );
 }
 
