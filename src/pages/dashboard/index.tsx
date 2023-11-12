@@ -40,8 +40,8 @@ function Dashboard() {
   */
   return (
     <AnimateUp className="">
-      <div className="grid grid-cols-[3fr_1fr] lg:min-h-[95vh]">
-        <div className="max-lg:min-h-[88vh]">
+      <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-[95vh]">
+        <div className="max-lg:min-h-[88vh] max-w-3xl">
           <InputForm />
         </div>
         <div className="lg:flex items-center">

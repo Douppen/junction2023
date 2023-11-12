@@ -120,9 +120,6 @@ function PainChart() {
   return (
     <ThemeProvider theme={theme}>
       <BarChart
-        sx={{
-          maxWidth: '95%',
-        }}
         xAxis={[
           {
             id: 'barCategories',
@@ -137,7 +134,7 @@ function PainChart() {
             label: 'Average pain level',
           },
         ]}
-        width={Math.min(width, 720)}
+        width={Math.min(width, 400)}
         height={480}
       />
     </ThemeProvider>

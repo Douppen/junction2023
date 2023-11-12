@@ -14,7 +14,7 @@ initializeApp({
 const ASSISTANT_ID = 'asst_i043nPhSRtV7L6fY4phYncFJ';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';
 
-export const CreateGeneralAssistant = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const CreateGeneralAssistant = onCall({ region: 'europe-west1' }, async (req) => {
   try {
     const openai = new OpenAI({ apiKey: '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' });
     const assistant = await openai.beta.assistants.create({
@@ -112,7 +112,7 @@ export const CreateGeneralAssistant = onCall({ cors: false, region: 'europe-west
     logger.error(e);
   }
 });
-export const OpenAIcompletions = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const OpenAIcompletions = onCall({ region: 'europe-west1' }, async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
     model: 'gpt-3.5-turbo-instruct',
@@ -129,7 +129,7 @@ export const OpenAIcompletions = onCall({ cors: false, region: 'europe-west1' },
   return 'Hello from Firebase!' + text;
 });
 
-export const CreateUserThread = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const CreateUserThread = onCall({ region: 'europe-west1' }, async (req) => {
   const { userdata } = req.data;
   const openai = new OpenAI({ apiKey: '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' });
   const thread = await openai.beta.threads.create({
@@ -144,7 +144,7 @@ export const CreateUserThread = onCall({ cors: false, region: 'europe-west1' }, 
 });
 
 // We create a new GPT assistant thread for the user and pass it some data
-export const runAfterOnboardingComplete = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const runAfterOnboardingComplete = onCall({ region: 'europe-west1' }, async (req) => {
   logger.log('onboarding complete');
   const user = req.auth;
   const openai = new OpenAI({ apiKey: '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' });
@@ -154,7 +154,7 @@ export const runAfterOnboardingComplete = onCall({ cors: false, region: 'europe-
   });
 });
 
-export const addPainInput = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const addPainInput = onCall({ region: 'europe-west1' }, async (req) => {
   const user = req.auth;
   const { painLevel, description } = req.data;
 
@@ -189,7 +189,7 @@ export const addPainInput = onCall({ cors: false, region: 'europe-west1' }, asyn
   await addMessageToThread(threadId, description);
 });
 
-export const addMessageToAssistantThread = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const addMessageToAssistantThread = onCall({ region: 'europe-west1' }, async (req) => {
   const user = req.auth;
   const { message } = req.data;
 
@@ -222,7 +222,7 @@ const addMessageToThread = async (threadId, message) => {
   });
 };
 
-export const chattingFunctionality = onCall({ cors: false, region: 'europe-west1' }, async (req) => {
+export const chattingFunctionality = onCall({ region: 'europe-west1' }, async (req) => {
   try {
     const user = req.auth;
     const { message } = req.data;
@@ -288,52 +288,52 @@ export const chattingFunctionality = onCall({ cors: false, region: 'europe-west1
 // Reduce the bill :))
 const MAX_CONCURRENT = 3;
 
-export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
-  const db = getFirestore();
-  const userRef = db.collection('users');
-  const users = await userRef.get().then((s) => s.docs);
+// export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => {
+//   const db = getFirestore();
+//   const userRef = db.collection('users');
+//   const users = await userRef.get().then((s) => s.docs);
 
-  const auth = Buffer.from('u23b270b98ddd5c3edce2a14d954097f0:1E93D770BCCD138511D0400FC006C0C3').toString('base64');
+//   const auth = Buffer.from('u23b270b98ddd5c3edce2a14d954097f0:1E93D770BCCD138511D0400FC006C0C3').toString('base64');
 
-  const messageData = {
-    from: 'Restorative',
-    message:
-      "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
-  };
+//   const messageData = {
+//     from: 'Restorative',
+//     message:
+//       "You haven't yet added your data for today! Your data helps us help you better. Add your data here: https://junction2023-datagrabbarna.web.app/login",
+//   };
 
-  const today = new Date().toDateString();
+//   const today = new Date().toDateString();
 
-  const pool = new PromisePool(
-    users.map(async (user) => {
-      if (user.data().updateTime.toDate().toDateString() != today) {
-        console.log(`Sending update to ${user.id}`);
-        // TODO: Figure out user phone number
-        const phoneNumber = user.data().phoneNumber;
-        if (!phoneNumber) {
-          return;
-        }
-        const message = new URLSearchParams({ ...messageData, to: phoneNumber }).toString();
+//   const pool = new PromisePool(
+//     users.map(async (user) => {
+//       if (user.data().updateTime.toDate().toDateString() != today) {
+//         console.log(`Sending update to ${user.id}`);
+//         // TODO: Figure out user phone number
+//         const phoneNumber = user.data().phoneNumber;
+//         if (!phoneNumber) {
+//           return;
+//         }
+//         const message = new URLSearchParams({ ...messageData, to: phoneNumber }).toString();
 
-        await fetch('https://api.46elks.com/a1/sms', {
-          method: 'post',
-          body: message,
-          headers: { Authorization: 'Basic ' + auth },
-        })
-          .then((res) => res.json())
-          .then((json) => console.log(json))
-          .catch((err) => console.log(err));
-      }
-    }),
-    MAX_CONCURRENT
-  );
+//         await fetch('https://api.46elks.com/a1/sms', {
+//           method: 'post',
+//           body: message,
+//           headers: { Authorization: 'Basic ' + auth },
+//         })
+//           .then((res) => res.json())
+//           .then((json) => console.log(json))
+//           .catch((err) => console.log(err));
+//       }
+//     }),
+//     MAX_CONCURRENT
+//   );
 
-  pool.start().then(() => console.log('All reminders sent'));
-});
+//   pool.start().then(() => console.log('All reminders sent'));
+// });
 
 /*
  *  Example request: {"data": {"from": "+35812345678", "audioUrl": "https://eample.org/audio.mp3."}}
  */
-export const receiveMMSAudio = onCall({ cors: false, region: 'europe-west1' }, async (req: Request) => {
+export const receiveMMSAudio = onCall({ region: 'europe-west1' }, async (req: Request) => {
   try {
     const { audioUrl, from } = req.data;
     console.log(from);
