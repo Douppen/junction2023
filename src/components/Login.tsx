@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useAuth, useFirestore, useSigninCheck } from 'reactfire';
 
 const provider = new GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
 export const Login = () => {
   const auth = useAuth();
