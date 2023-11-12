@@ -40,7 +40,7 @@ function Dashboard() {
   */
   return (
     <AnimateUp className="">
-      <div className="grid lg:grid-cols-[2fr_1fr] lg:min-h-[95vh]">
+      <div className="grid grid-cols-[3fr_1fr] lg:min-h-[95vh]">
         <div className="max-lg:min-h-[88vh]">
           <InputForm />
         </div>
