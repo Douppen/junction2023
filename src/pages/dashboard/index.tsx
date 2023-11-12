@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useAuth, useFirestore, useFunctions, useUser } from 'reactfire';
+import { useAuth, useCallableFunctionResponse, useFirestore, useFunctions, useUser } from 'reactfire';
 import PainChart from '@/components/Painchart';
 import { AnimateUp } from '@/components/AnimateUp';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -143,17 +143,13 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
     } else {
       try {
         setCurrentInputIndex(-1);
-        const delayPromise = new Promise((resolve) => setTimeout(resolve, 1000));
-
-        delayPromise.then(() => {
-          addPainInput({
-            description: `${data.text}. The pain level associated with this log was ${data.painLevel} out of 10.`,
-            painLevel: data.painLevel,
-          }).then(() => {
-            form.reset();
-            setHasSubmitted(true);
-            setCurrentInputIndex(0);
-          });
+        addPainInput({
+          description: `${data.text}. The pain level associated with this log was ${data.painLevel} out of 10.`,
+          painLevel: data.painLevel,
+        }).then(() => {
+          form.reset();
+          setHasSubmitted(true);
+          setCurrentInputIndex(0);
         });
 
         // toast.promise(delayPromise, {
@@ -212,8 +208,8 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
                       props.handleSelected(0);
                     }}
                     className={`${
-                      props.selected === 0 && 'bg-gray-100'
-                    } transition relative whitespace-nowrap inline-flex items-center rounded-l-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
+                      props.selected === 0 ? 'bg-gray-100' : 'bg-white'
+                    } transition relative whitespace-nowrap inline-flex items-center rounded-l-full px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
                   >
                     Pain logger
                   </button>
@@ -221,8 +217,8 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
                     type="button"
                     onClick={() => props.handleSelected(1)}
                     className={`${
-                      props.selected === 1 && 'bg-gray-100'
-                    } transition relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
+                      props.selected === 1 ? 'bg-gray-100' : 'bg-white'
+                    } transition relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
                   >
                     Suggestions
                   </button>
@@ -259,22 +255,7 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
                   <Input type="text" disabled label={`Loading${'.'.repeat(dots)}`} />
                 </AnimateUp>
               )}
-              {props.selected === 1 && (
-                <AnimateUp className="relative">
-                  <div className="mb-2">
-                    <label className="font-bold text-2xl sm:text-3xl">
-                      <span>Suggestions</span>
-                    </label>
-                  </div>
-                  <div className="space-y-1">
-                    {['Go for a walk', 'You should continue swimming', 'I think you should try hot yoga'].map(
-                      (text, i) => {
-                        return <Suggestion key={i} text={text} index={i} />;
-                      }
-                    )}
-                  </div>
-                </AnimateUp>
-              )}{' '}
+              {props.selected === 1 && <Suggestions />}
             </div>
           </form>
         </div>
@@ -283,11 +264,47 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
   );
 };
 
+const Suggestions = () => {
+  const getSuggestions = httpsCallable(useFunctions(), 'chattingFunctionality');
+  const [suggestions, setSuggestions] = useState<string[] | null>(['heyy']);
+
+  useEffect(() => {
+    getSuggestions({
+      message: 'Get a list of improvements or suggestions that I could do to decrease my pain',
+    }).then((res) => {
+      const data = res.data as any | null;
+      if (data?.commands) {
+        setSuggestions(data.commands);
+      }
+      console.log(res);
+    });
+  }, []);
+
+  return (
+    <AnimateUp className="relative">
+      <div className="mb-2">
+        <label className="font-bold text-2xl sm:text-3xl">
+          <span>Suggestions</span>
+        </label>
+      </div>
+      {!suggestions ? (
+        <Suggestion index={1} text={'Loading suggestions'} />
+      ) : (
+        <div className="space-y-1">
+          {['heyy'].slice(0, 4).map((text, i) => {
+            return <Suggestion key={i} text={text} index={i} />;
+          })}
+        </div>
+      )}
+    </AnimateUp>
+  );
+};
+
 const Suggestion = (props: { text: string; index: number }) => {
   return (
     <AnimateUp delay={props.index * 0.2}>
       <li className="transition relative w-full overflow-auto resize-none font-medium text-2xl sm:text-3xl text-neutral-800">
-        <span className="relative right-4">{props.text}</span>
+        <span className="relative right-4">{props.text.charAt(0).toUpperCase() + props.text.slice(1)}</span>
       </li>
     </AnimateUp>
   );

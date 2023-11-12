@@ -111,6 +111,7 @@ export const OnBoardingForm = () => {
         toast.promise(delayPromise, {
           loading: 'Initializing...',
           success: 'Success!',
+          error: 'Something went wrong, please try again',
         });
 
         delayPromise.then(() => {
@@ -120,7 +121,7 @@ export const OnBoardingForm = () => {
               ageYears: parseInt(formData.ageYears),
             },
           }).then(() => {
-            afterOnboarding().then(() => {
+            afterOnboarding().then((res) => {
               router.push('/dashboard');
             });
           });

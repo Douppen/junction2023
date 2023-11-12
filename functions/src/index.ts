@@ -167,6 +167,15 @@ export const addPainInput = onCall({ region: 'europe-west1' }, async (req) => {
   const userDoc = await getFirestore().collection('users').doc(user.uid).get();
   const userDocData = userDoc.data();
 
+  const threadId = userDocData.assistantThreadId;
+  if (!threadId) {
+    return {
+      error: 'no thread id',
+    };
+  }
+
+  await addMessageToThread(threadId, description);
+
   // for graph
   await getFirestore()
     .collection('users')
@@ -179,14 +188,7 @@ export const addPainInput = onCall({ region: 'europe-west1' }, async (req) => {
     .doc(user.uid)
     .update({ ...userDocData, updateTime: new Date() });
 
-  const threadId = userDocData.assistantThreadId;
-  if (!threadId) {
-    return {
-      error: 'no thread id',
-    };
-  }
-
-  await addMessageToThread(threadId, description);
+  return { message: 'success' };
 });
 
 export const addMessageToAssistantThread = onCall({ region: 'europe-west1' }, async (req) => {
@@ -270,7 +272,7 @@ export const chattingFunctionality = onCall({ region: 'europe-west1' }, async (r
   Implementing the code that waits for the response
   */
 
-  let status = 'queued';
+  let status: Run.status = 'queued';
   var runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
 
   logger.log('before while');
@@ -279,13 +281,44 @@ export const chattingFunctionality = onCall({ region: 'europe-west1' }, async (r
     runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
     status = runStatus.status;
 
+    if (status === 'requires_action') {
+      logger.log(runStatus);
+      break;
+    }
+    logger.log(status);
+
     // Add a delay before checking again (e.g., every few seconds)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
+
+  if (status === 'requires_action') {
+    // @ts-ignore
+    const toolCall = runStatus.required_action.submit_tool_outputs.tool_calls[0];
+    const commands = toolCall.function.arguments;
+    logger.error({ commands });
+    logger.log('before parse');
+    const parse = JSON.parse(commands);
+    logger.log({ parse });
+    try {
+      await openai.beta.threads.runs.submitToolOutputs(threadId, runStatus.id, {
+        tool_outputs: [
+          {
+            output: 'You could try doing this',
+            tool_call_id: toolCall.id,
+          },
+        ],
+      });
+    } catch (e) {
+      logger.error('error in submitToolOutputs');
+    }
+    return { commands: parse.commands };
+  }
+
   logger.log('after while');
 
   const messages = await openai.beta.threads.messages.list(threadId);
   const latestMessageStr = messages?.body?.data[0]?.content[0]?.text?.value ?? 'Error in backend';
+  logger.log(latestMessageStr);
   return { message: latestMessageStr };
 });
 

@@ -51,7 +51,7 @@ export const OnboardingWrapper = ({ children, user }: { children: React.ReactNod
 
   return (
     <AnimatePresence>
-      {!data.onboarding?.phoneNumber ? (
+      {!data.onboarding ? (
         <OnBoardingForm />
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
