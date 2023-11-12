@@ -121,7 +121,7 @@ function PainChart() {
     <AnimatePresence>
       {data.length === 0 ? (
         <motion.div className="h-[18rem] ring-1 ring-gray-100 xl:h-[22rem] aspect-[4/3] bg-neutral-100 text-neutral-400 rounded-xl flex items-center justify-center">
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
             Write your first log to view the graph
           </motion.p>
         </motion.div>

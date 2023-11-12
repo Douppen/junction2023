@@ -4,7 +4,7 @@ import PainChart from '@/components/Painchart';
 import { AnimateUp } from '@/components/AnimateUp';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { doc, updateDoc } from 'firebase/firestore';
-import { LayoutGroup, motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { Input } from '@/components/Input';
 import { useState, useEffect } from 'react';
@@ -38,15 +38,22 @@ function Dashboard() {
   /*
   Input {temp} where testing testing is currently 
   */
+
+  const [selected, setSelected] = useState(0);
+
   return (
     <AnimateUp className="lg:pt-20">
       <div className="grid lg:grid-cols-[3fr_1fr] lg:min-h-full">
-        <div className="max-lg:min-h-[80vh] max-w-3xl">
-          <InputForm />
+        <div className="max-lg:min-h-[80vh] max-w-[50rem]">
+          <InputForm selected={selected} handleSelected={(n) => setSelected(n)} />
         </div>
-        <div className="lg:flex items-center">
-          <PainChart />
-        </div>
+        <AnimatePresence>
+          {selected === 0 && (
+            <AnimateUp className="lg:flex items-center">
+              <PainChart />
+            </AnimateUp>
+          )}
+        </AnimatePresence>
       </div>
     </AnimateUp>
   );
@@ -54,7 +61,7 @@ function Dashboard() {
 
 export default Dashboard;
 
-const InputForm = () => {
+const InputForm = (props: { selected: number; handleSelected: (n: number) => void }) => {
   const auth = useAuth();
   const addPainInput = httpsCallable(useFunctions(), 'addPainInput');
 
@@ -186,10 +193,8 @@ const InputForm = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const [selected, setSelected] = useState(0);
-
   return (
-    <div className="h-full">
+    <div className="mt-[11vh]">
       <div
         className="h-full flex flex-col justify-center"
         onClick={() => {
@@ -204,19 +209,19 @@ const InputForm = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setSelected(0);
+                      props.handleSelected(0);
                     }}
                     className={`${
-                      selected === 0 && 'bg-gray-100'
+                      props.selected === 0 && 'bg-gray-100'
                     } transition relative whitespace-nowrap inline-flex items-center rounded-l-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
                   >
                     Pain logger
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSelected(1)}
+                    onClick={() => props.handleSelected(1)}
                     className={`${
-                      selected === 1 && 'bg-gray-100'
+                      props.selected === 1 && 'bg-gray-100'
                     } transition relative whitespace-nowrap -ml-px inline-flex items-center rounded-r-full bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:z-10`}
                   >
                     Suggestions
@@ -224,14 +229,14 @@ const InputForm = () => {
                 </LayoutGroup>
               </span>
               {inputs.map((input, index) => {
-                if (index === currentInputIndex && selected === 0) {
+                if (index === currentInputIndex && props.selected === 0) {
                   return (
                     <AnimateUp key={input.name} className="relative">
                       <Input
                         isTextArea
                         type="text"
                         label={input.label}
-                        speechRecog
+                        speechRecog={index === 0}
                         onMicChange={(shouldListen) => {
                           if (shouldListen) {
                             SpeechRecognition.startListening({ continuous: true });
@@ -249,22 +254,22 @@ const InputForm = () => {
                   );
                 }
               })}
-              {currentInputIndex === -1 && selected === 0 && (
+              {currentInputIndex === -1 && props.selected === 0 && (
                 <AnimateUp className="relative">
                   <Input type="text" disabled label={`Loading${'.'.repeat(dots)}`} />
                 </AnimateUp>
               )}
-              {selected === 1 && (
+              {props.selected === 1 && (
                 <AnimateUp className="relative">
-                  <div className="mb-1.5">
+                  <div className="mb-2">
                     <label className="font-bold text-2xl sm:text-3xl">
                       <span>Suggestions</span>
                     </label>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {['Go for a walk', 'You should continue swimming', 'I think you should try hot yoga'].map(
                       (text, i) => {
-                        return <Suggestion text={text} index={i} />;
+                        return <Suggestion key={i} text={text} index={i} />;
                       }
                     )}
                   </div>
@@ -281,7 +286,7 @@ const InputForm = () => {
 const Suggestion = (props: { text: string; index: number }) => {
   return (
     <AnimateUp delay={props.index * 0.2}>
-      <li className="transition relative w-full overflow-auto resize-none font-bold text-2xl sm:text-3xl text-neutral-400">
+      <li className="transition relative w-full overflow-auto resize-none font-medium text-2xl sm:text-3xl text-neutral-800">
         <span className="relative right-4">{props.text}</span>
       </li>
     </AnimateUp>

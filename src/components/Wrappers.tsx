@@ -45,8 +45,6 @@ export const OnboardingWrapper = ({ children, user }: { children: React.ReactNod
 
   const data = userDocData.data;
 
-  console.log(data);
-
   if (!data) {
     return null;
   }

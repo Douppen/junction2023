@@ -55,7 +55,7 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
     return (
       <div className={isTextArea ? '-mb-36' : ''}>
         {label && (
-          <div className="mb-1.5">
+          <div className="mb-2">
             <label className="font-bold text-2xl sm:text-3xl">
               <span>{label}</span>
             </label>
@@ -70,7 +70,7 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
                 exit={{ opacity: 0, x: -5 }}
                 transition={{ type: 'tween' }}
                 type="button"
-                className=" pt-[0.175rem] sm:pt-[0.05rem] absolute -left-7 md:-left-9"
+                className=" pt-[0.175rem] sm:pt-[0.05rem] absolute -left-7 md:-left-9 lg:-left-10"
                 onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
               >
                 {listening ? (
