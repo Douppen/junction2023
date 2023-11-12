@@ -40,19 +40,17 @@ function Dashboard() {
   */
   return (
     <AnimateUp className="">
-      <div className="grid lg:grid-cols-[4fr_2fr]">
-        <div className="h-[95vh]">
+      <div className="grid lg:grid-cols-2 lg:min-h-[95vh]">
+        <div className="max-lg:min-h-[88vh]">
           <InputForm />
         </div>
-        <div className="flex items-center -mt-20">
+        <div className="lg:flex items-center">
           <PainChart />
         </div>
-        <div className="my-40">
-          <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
-          <p style={{ fontSize: '24px', marginBottom: '2px' }} >
-            testing testing 
-          </p>
-        </div>
+      </div>
+      <div className="my-40">
+        <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
+        <p style={{ fontSize: '24px', marginBottom: '2px' }}>testing testing</p>
       </div>
     </AnimateUp>
   );

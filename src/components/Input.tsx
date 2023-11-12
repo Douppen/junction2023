@@ -1,4 +1,7 @@
+import { AnimatePresence } from 'framer-motion';
 import { forwardRef, useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 type InputProps = {
   label?: string;
@@ -21,6 +24,14 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
     };
 
     useEffect(() => {
+      if (listening) {
+        toast.message('Listening...');
+      } else {
+        toast.dismiss();
+      }
+    }, [listening]);
+
+    useEffect(() => {
       setHasText(value ? true : false);
     }, [value]);
 
@@ -34,29 +45,35 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
           </div>
         )}
         <div className="flex gap-1 relative">
-          {speechRecog && onMicChange && (
-            <button
-              type="button"
-              className="text-neutral-400 pt-[0.2rem] absolute -left-9"
-              onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
-            >
-              {listening ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3m7 9c0 3.53-2.61 6.44-6 6.93V21h-2v-3.07c-3.39-.49-6-3.4-6-6.93h2a5 5 0 0 0 5 5a5 5 0 0 0 5-5h2Z"
-                  />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M17.3 11c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72m-8.2-6.1c0-.66.54-1.2 1.2-1.2c.66 0 1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2c-.66 0-1.2-.54-1.2-1.2M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3Z"
-                  />
-                </svg>
-              )}
-            </button>
-          )}
+          <AnimatePresence>
+            {speechRecog && onMicChange && !hasText && (
+              <motion.button
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -5 }}
+                transition={{ type: 'tween' }}
+                type="button"
+                className="text-neutral-400 pt-[0.175rem] sm:pt-[0.25rem] absolute -left-7 md:-left-9"
+                onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
+              >
+                {listening ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="md:w-8 md:h-8 h-7 w-7" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3m7 9c0 3.53-2.61 6.44-6 6.93V21h-2v-3.07c-3.39-.49-6-3.4-6-6.93h2a5 5 0 0 0 5 5a5 5 0 0 0 5-5h2Z"
+                    />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="md:w-8 md:h-8 h-7 w-7" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M17.3 11c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72m-8.2-6.1c0-.66.54-1.2 1.2-1.2c.66 0 1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2c-.66 0-1.2-.54-1.2-1.2M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3Z"
+                    />
+                  </svg>
+                )}
+              </motion.button>
+            )}
+          </AnimatePresence>
           {isTextArea ? (
             // @ts-expect-error
             <textarea
