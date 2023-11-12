@@ -16,7 +16,7 @@ setGlobalOptions({ region: DEFAULT_REGION });
 const ASSISTANT_ID = 'asst_i043nPhSRtV7L6fY4phYncFJ';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';
 
-export const CreateGeneralAssistant = onCall({ cors: '*' }, async (req) => {
+export const CreateGeneralAssistant = onCall({ cors: false }, async (req) => {
   try {
     const openai = new OpenAI({ apiKey: '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' });
     const assistant = await openai.beta.assistants.create({
@@ -114,7 +114,7 @@ export const CreateGeneralAssistant = onCall({ cors: '*' }, async (req) => {
     logger.error(e);
   }
 });
-export const OpenAIcompletions = onCall({ cors: '*' }, async (req) => {
+export const OpenAIcompletions = onCall({ cors: false }, async (req) => {
   const openai = new OpenAI({ apiKey: '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' });
   const completion = await openai.completions.create({
     model: 'gpt-3.5-turbo-instruct',
@@ -131,7 +131,7 @@ export const OpenAIcompletions = onCall({ cors: '*' }, async (req) => {
   return 'Hello from Firebase!' + text;
 });
 
-export const CreateUserThread = onCall({ cors: '*' }, async (req) => {
+export const CreateUserThread = onCall({ cors: false }, async (req) => {
   const { userdata } = req.data;
   const openai = new OpenAI({ apiKey: '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' });
   const thread = await openai.beta.threads.create({
@@ -146,7 +146,7 @@ export const CreateUserThread = onCall({ cors: '*' }, async (req) => {
 });
 
 // We create a new GPT assistant thread for the user and pass it some data
-export const runAfterOnboardingComplete = onCall({ cors: '*' }, async (req) => {
+export const runAfterOnboardingComplete = onCall({ cors: false }, async (req) => {
   logger.log('onboarding complete');
   const user = req.auth;
   const openai = new OpenAI({ apiKey: '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' });
@@ -156,7 +156,7 @@ export const runAfterOnboardingComplete = onCall({ cors: '*' }, async (req) => {
   });
 });
 
-export const addPainInput = onCall({ cors: '*' }, async (req) => {
+export const addPainInput = onCall({ cors: false }, async (req) => {
   const user = req.auth;
   const { painLevel, description } = req.data;
 
@@ -191,7 +191,7 @@ export const addPainInput = onCall({ cors: '*' }, async (req) => {
   await addMessageToThread(threadId, description);
 });
 
-export const addMessageToAssistantThread = onCall({ cors: '*' }, async (req) => {
+export const addMessageToAssistantThread = onCall({ cors: false }, async (req) => {
   const user = req.auth;
   const { message } = req.data;
 
@@ -224,7 +224,7 @@ const addMessageToThread = async (threadId, message) => {
   });
 };
 
-export const chattingFunctionality = onCall({ cors: '*' }, async (req) => {
+export const chattingFunctionality = onCall({ cors: false }, async (req) => {
   try {
     const user = req.auth;
     const { message } = req.data;
@@ -335,7 +335,7 @@ export const sendSMSReminders = onSchedule('every day 18:00', async (_event) => 
 /*
  *  Example request: {"data": {"from": "+35812345678", "audioUrl": "https://eample.org/audio.mp3."}}
  */
-export const receiveMMSAudio = onCall({ cors: '*' }, async (req: Request) => {
+export const receiveMMSAudio = onCall({ cors: false }, async (req: Request) => {
   try {
     const { audioUrl, from } = req.data;
     console.log(from);
