@@ -282,7 +282,7 @@ const Suggestion = (props: { text: string; index: number }) => {
   return (
     <AnimateUp delay={props.index * 0.2}>
       <li className="transition relative w-full overflow-auto resize-none font-bold text-2xl sm:text-3xl text-neutral-400">
-        {props.text}
+        <span className="relative right-4">{props.text}</span>
       </li>
     </AnimateUp>
   );

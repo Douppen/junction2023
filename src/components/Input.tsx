@@ -70,13 +70,13 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
                 exit={{ opacity: 0, x: -5 }}
                 transition={{ type: 'tween' }}
                 type="button"
-                className=" pt-[0.175rem] sm:pt-[0.25rem] absolute -left-7 md:-left-9"
+                className=" pt-[0.175rem] sm:pt-[0.05rem] absolute -left-7 md:-left-9"
                 onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
               >
                 {listening ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="md:w-8 md:h-8 h-7 w-7 active:scale-110 transition text-neutral-400"
+                    className="md:w-9 md:h-9 h-7 w-7 hover:scale-105 transition text-neutral-400"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -87,7 +87,7 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
                 ) : (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="md:w-8 md:h-8 h-7 w-7 active:scale-110 transition text-neutral-400"
+                    className="md:w-9 md:h-9 h-7 w-7 hover:scale-105 transition text-neutral-400"
                     viewBox="0 0 24 24"
                   >
                     <path
