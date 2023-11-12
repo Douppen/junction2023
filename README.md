@@ -18,7 +18,7 @@ Continously improving chatting using assistants. For each chatting interaction a
 ### Data visualization
 The previous day average pain inputs are organized on the dashboard in an interactive bar chart.
 ### AI powered personal insights
-The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
+(mocked!) The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
 ## Technical implementation
 The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. To summarize every user has the same initial configuration of the "Assistants" but each user has a personalized thread defined in the onboarding process. This makes the application easily scalable.  
 ### Technologies used
@@ -113,7 +113,7 @@ Continously improving chatting using assistants.
 ### Data visualization
 The previous day average pain inputs are organized on the dashboard in an interactive bar chart.
 ### AI powered personal insights
-The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
+(mocked!) The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
 ## Technical implementation
 The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. To summarize every user has the same initial configuration of the "Assistants" but each user has a personalized thread defined in the onboarding process. This makes the application easily scalable.  
 ## The current limitiations
