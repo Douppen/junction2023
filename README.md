@@ -84,7 +84,7 @@ So, you should have one terminal process running `firebase emulators:start` in t
 Chronic pain imposes a significant personal and economic burden, impacting more than 30% of the global population in some form. Every patient has their own challenges and we want to make it easier for the patient to get personalized feedback on their chronic pain. The feedback will be given by visualizations, chatting and personally developed insights. Making the feedback personalized will hopefully allow for a more personalized care where less opiates and addicting drugs are required.  
 **That is our goal with Restorative** 
 # Restorative
-Restorative is a web application that allows users that experience chronic pain to track it and get feedback using artifical intelligence
+Restorative is a web application that empowers indviduals with chronic pain by enabling them to monitor and receive AI-driven feedback
 
 **The main features are the following**  
 ### Seemless speech and text input
@@ -97,7 +97,7 @@ Continously improving chatting. For each chatting interaction a run is created o
 ### Data visualization
 The latest pain inputs are organized on the dashboard in an interactive bar chart.
 ## AI powered personal insights
-Currently mocked! 
+The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
 ## Technical implementation
 The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. 
 ## The current limitiations

@@ -13,8 +13,31 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { httpsCallable } from 'firebase/functions';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+/*
+import { chattingFunctionality } from '../../../functions/src';
+*/
 
 function Dashboard() {
+  /*
+  const functions = useFunctions();
+  const [temp, setTemp] = useState('');
+  const chattingFunctionality = httpsCallable(functions, 'chattingFunctionality');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resp:any = await chattingFunctionality({ message: "Use the get_one_success function" });
+        setTemp(resp.data?.message);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Handle error if necessary
+      }
+    };
+    fetchData();
+  }, []);
+  */
+  /*
+  Input {temp} where testing testing is currently 
+  */
   return (
     <AnimateUp className="">
       <div className="grid grid-cols-[1fr_auto]">
@@ -26,8 +49,8 @@ function Dashboard() {
         </div>
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
-          <p style={{ fontSize: '24px', marginBottom: '2px' }}>
-            Based on your personal data, it seems like swimming is an effective paint mitigator!
+          <p style={{ fontSize: '24px', marginBottom: '2px' }} >
+            testing testing 
           </p>
         </div>
       </div>
