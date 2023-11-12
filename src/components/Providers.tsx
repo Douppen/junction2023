@@ -33,7 +33,9 @@ function FirebaseComponents({ children }: { children: ReactNode }) {
   const functions = getFunctions(app, 'europe-west1');
   const analytics = getAnalytics(app);
 
-  connectFunctionsEmulator(functions, 'localhost', 5001);
+  if (process.env.NODE_ENV === "development") {
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+  }
 
   return (
     <AuthProvider sdk={auth}>

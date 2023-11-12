@@ -40,12 +40,12 @@ function Dashboard() {
   */
   return (
     <AnimateUp className="">
-      <div className="grid grid-cols-[1fr_auto]">
-        <div className="h-[90vh]">
+      <div className="grid lg:grid-cols-[4fr_2fr]">
+        <div className="h-[95vh]">
           <InputForm />
         </div>
         <div className="flex items-center -mt-20">
-          <PainChart />S
+          <PainChart />
         </div>
         <div className="my-40">
           <h1 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '20px' }}>Personal insights</h1>
@@ -132,8 +132,6 @@ const InputForm = () => {
       data.painLevel = parsedInt;
     }
 
-    console.log(data);
-
     // Update formData with new values
     setFormData((prevFormData) => ({ ...prevFormData, ...data }));
 
@@ -147,7 +145,7 @@ const InputForm = () => {
 
         delayPromise.then(() => {
           addPainInput({
-            description: data.text,
+            description: `${data.text}. The pain level associated with this log was ${data.painLevel} out of 10.`,
             painLevel: data.painLevel,
           }).then(() => {
             form.reset();
@@ -193,16 +191,6 @@ const InputForm = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // const handleSave = async () => {
-  //   const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
-  //   const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
-  //   const formData = new FormData(); // preparing to send to the server
-
-  //   formData.append('file', audioFile); // preparing to send to the server
-
-  //   onSaveAudio(formData); // sending to the server
-  // };
-
   return (
     <div
       className="h-full pb-20 flex flex-col justify-center"
@@ -210,7 +198,7 @@ const InputForm = () => {
         form.setFocus(inputs[currentInputIndex]?.name);
       }}
     >
-      <div className="px-4 md:px-12 -mt-12">
+      <div className="px-4 md:px-12">
         <form onSubmit={form.handleSubmit(handleStepSubmit)}>
           <div className="form-control w-full">
             {/* <span className="isolate w-min inline-flex rounded-full mt-5 shadow-sm mb-5">
@@ -233,6 +221,7 @@ const InputForm = () => {
                 return (
                   <AnimateUp key={input.name} className="relative">
                     <Input
+                      isTextArea
                       type="text"
                       label={input.label}
                       speechRecog
@@ -246,6 +235,7 @@ const InputForm = () => {
                       listening={listening}
                       error={form.formState.errors[input.name]?.message}
                       placeholder={input.placeholder}
+                      onSubmit={form.handleSubmit(handleStepSubmit)}
                       {...form.register(input.name)}
                     />
                   </AnimateUp>
