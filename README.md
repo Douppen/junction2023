@@ -12,12 +12,15 @@ The user can create an account and inputs relevant data which is stored in the m
 The MMS implemenation is currently in mock when it comes to speech input due to the impossiblity of sending audio files over 46elks. The user can however make an input Using SMS and will be sent a reminder (once a day) if they forget to report their pain level.  
   
 ### Responsive chatting
-Currently mocked! 
+Continously improving chatting using assistants. For each chatting interaction a run is created on the users personal thread which analyzes all the inputted data for that user to formulate a response. 
 ### Data visualization
-The latest pain inputs are organized on the dashboard in an interactive bar chart.
+The previous day average pain inputs are organized on the dashboard in an interactive bar chart.
 ### AI powered personal insights
-Currently mocked! 
-### Technical implementation
+The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
+## Technical implementation
+The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. To summarize every user has the same initial configuration of the "Assistants" but each user has a personalized thread defined in the onboarding process. This makes the application easily scalable.  
+## The current limitiations
+The sources of the response from regular inputs are currently unrelated. The use of OPENAI API also make the language learning model a black box. 
 
 
 ## Online Deployment 
@@ -86,16 +89,15 @@ Chronic pain imposes a significant personal and economic burden, impacting more 
 # Restorative
 Restorative is a web application that empowers indviduals with chronic pain by enabling them to monitor data and receive AI-driven feedback
 
-**The main features are the following**  
 ### Seemless speech and text input
-The user can create an account and inputs relevant data which is stored in the model. After the account is created the user can input data on the dashboard. The user can on the dashboard input a general state of main and how they feel. The OpenAI API assistant will store each input and base other functionality in the application on these inputs. This allows the user to get a continously improving and more personalized assistant. The user also inputs their pain level. The dashboard also has an speech input. The speech input only works in the newest edition of chrome 
-  
-The MMS implemenation is currently in mock when it comes to speech input due to the impossiblity of sending audio files over 46elks. The user can however make an input Using SMS and will be sent a reminder (once a day) if they forget to report their pain level.  
+After the account is created the user can input data on the dashboard. The input a general pain situation using speech(newest chrome version) or text. The OpenAI API assistant will store each input and base other functionality in the application on these inputs. This allows the user to get a continously improving and more personalized assistant.
+
+The MMS implementation functions with text, but presently, it is only mocked with speech because sending audio files over 46elks is impossible. The user will be sent a reminder (once a day) if they forget to report their pain level.  
   
 ### Responsive chatting
-Continously improving chatting. For each chatting interaction a run is created on the users personal thread which analyzes all the inputted data for that user to formulate a response. 
+Continously improving chatting using assistants. 
 ### Data visualization
-The latest pain inputs are organized on the dashboard in an interactive bar chart.
+The previous day average pain inputs are organized on the dashboard in an interactive bar chart.
 ### AI powered personal insights
 The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
 ## Technical implementation
@@ -108,6 +110,6 @@ The sources of the response from regular inputs are currently unrelated. The use
 The production deployment can be found at [https://junction2023-datagrabbarna.web.app/](https://junction2023-datagrabbarna.web.app/).
 
 ## The future vision 
-Restorative currently lack some features that we would have liked to have time to implement. An connection with the google calender API would have been nice to make it possible for the AI to recommend tasks and input them in google calender. A map implementation with data on the closest places to do pain reliefing theraphy (like acupuncture) would have been nice. 
+Restorative currently lack some features that we deem vital. Connection with the google calender API, to make it possible for the AI to recommend tasks and input them in google calender. A map implementation with data on the closest places to do pain reliefing theraphy (like acupuncture) would have been nice. 
 
-** More thorough information available in the readME**
+** More information available in the readME**
