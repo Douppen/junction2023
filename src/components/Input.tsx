@@ -6,10 +6,11 @@ type InputProps = {
   speechRecog?: boolean;
   onMicChange?: (shouldListen: boolean) => void;
   listening?: boolean;
+  isTextArea?: boolean;
 } & React.ComponentPropsWithoutRef<'input'>;
 
 export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
-  ({ onChange, value, label, error, listening, speechRecog, onMicChange, ...props }, ref) => {
+  ({ onChange, value, label, error, listening, speechRecog, onMicChange, isTextArea, onSubmit, ...props }, ref) => {
     const [hasText, setHasText] = useState(value ? true : false);
 
     const handleChange = (e: any) => {
@@ -24,7 +25,7 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
     }, [value]);
 
     return (
-      <div>
+      <div className={isTextArea ? '-mb-36' : ''}>
         {label && (
           <div className="mb-1.5">
             <label className="font-bold text-2xl sm:text-3xl">
@@ -32,11 +33,11 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
             </label>
           </div>
         )}
-        <div className="flex items-center gap-1 relative">
+        <div className="flex gap-1 relative">
           {speechRecog && onMicChange && (
             <button
               type="button"
-              className="text-neutral-400 absolute -left-9"
+              className="text-neutral-400 pt-[0.2rem] absolute -left-9"
               onClick={() => (!listening ? onMicChange(true) : onMicChange(false))}
             >
               {listening ? (
@@ -56,16 +57,37 @@ export const Input = forwardRef<HTMLTextAreaElement, InputProps>(
               )}
             </button>
           )}
-          <textarea
-            {...props}
-            rows={1}
-            ref={ref}
-            value={value}
-            onChange={handleChange}
-            className={`placeholder:font-bold w-full placeholder:text-neutral-400 text-2xl sm:text-3xl outline-none bg-gray-300 disabled:bg-white ${
-              !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
-            }`}
-          />
+          {isTextArea ? (
+            // @ts-expect-error
+            <textarea
+              {...props}
+              rows={5}
+              ref={ref}
+              value={value}
+              onChange={handleChange}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault();
+                  // @ts-expect-error
+                  onSubmit?.(event);
+                }
+              }}
+              className={`placeholder:font-bold transition w-full overflow-auto resize-none font-medium placeholder:text-neutral-400 text-2xl sm:text-3xl outline-none disabled:bg-white ${
+                !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
+              }`}
+            />
+          ) : (
+            <input
+              {...props}
+              // @ts-expect-error
+              ref={ref}
+              value={value}
+              onChange={handleChange}
+              className={`placeholder:font-bold transition w-full overflow-auto resize-none font-medium placeholder:text-neutral-400 text-2xl sm:text-3xl outline-none disabled:bg-white ${
+                !hasText ? 'placeholder:opacity-100' : 'placeholder:opacity-0'
+              }`}
+            />
+          )}
         </div>
         {error && <div className="text-sm sm:text-xl text-neutral-400 absolute top-[4.5rem] mt-2.5">{error}</div>}
       </div>
