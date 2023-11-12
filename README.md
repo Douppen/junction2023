@@ -4,7 +4,9 @@ As stated in the challenge the goal was to develop a digital solution to enchane
 From the hackerpack we also decided to use the [46elks](https://46elks.com/) API
 ## Description
 Restorative is a web application that allows users that experience chronic pain to track it and get feedback using artifical intelligence  
-  
+
+Chronic pain imposes a significant personal and economic burden, impacting more than 30% of the global population in some form[1](https://www.thelancet.com/article/S0140-6736(21)00393-7/fulltext). Every patient has their own challenges[2](https://n.neurology.org/content/65/3/437.short) and we want to make it easier for the patient to get personalized feedback on their chronic pain. The feedback will be given by visualizations, chatting and personally developed insights. This will hopefully allow for a more personalized care where less opiates and addicting drugs are required. 
+
 **The main features are the following**  
 ### Seemless speech and text input
 The user can create an account and inputs relevant data which is stored in the model. After the account is created the user can input data on the dashboard. The user can on the dashboard input a general state of main and how they feel. The OpenAI API assistant will store each input and base other functionality in the application on these inputs. This allows the user to get a continously improving and more personalized assistant. The user also inputs their pain level. The dashboard also has an speech input. The speech input only works in the newest edition of chrome 
@@ -19,6 +21,15 @@ The previous day average pain inputs are organized on the dashboard in an intera
 The Ai powered inputs uses the Assistant functions to allow the end user to get relevant data based on the previous input. One such function is the get_one_success which returns "one thing that the user is doing which they should continue doing to help with pain relief"
 ## Technical implementation
 The majority of the data and all the AI implementations are handled using the [OpenAI Assitants Beta API](https://platform.openai.com/docs/assistants/overview). The onboarding data is handled by the firebase documents but ultimately parsed to the OpenAI. Every user has a different thread that continues to grow when requests are made and data inputted. To summarize every user has the same initial configuration of the "Assistants" but each user has a personalized thread defined in the onboarding process. This makes the application easily scalable.  
+### Technologies used
+    -npm (9.6.6)
+    -node (v20.2.0)
+    -firebase
+    -TypeScript
+    - Node.js
+    - React.js
+    - tailwindCSS
+
 ## The current limitiations
 The sources of the response from regular inputs are currently unrelated. The use of OPENAI API also make the language learning model a black box. 
 
