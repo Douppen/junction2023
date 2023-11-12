@@ -7,7 +7,9 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp } from 'firebase-admin/app';
 import { PromisePool } from 'es6-promise-pool';
 
-initializeApp();
+initializeApp({
+  serviceAccountId: '830943649685-compute@developer.gserviceaccount.com',
+});
 
 const ASSISTANT_ID = 'asst_i043nPhSRtV7L6fY4phYncFJ';
 const JSON_ASSISTANT_ID = 'asst_qTuEb5TistWrBBQrieoRCrpB';

@@ -121,7 +121,7 @@ function PainChart() {
     <ThemeProvider theme={theme}>
       <BarChart
         sx={{
-          maxWidth: '70%',
+          maxWidth: '95%',
         }}
         xAxis={[
           {
