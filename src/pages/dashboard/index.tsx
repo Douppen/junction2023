@@ -266,7 +266,7 @@ const InputForm = (props: { selected: number; handleSelected: (n: number) => voi
 
 const Suggestions = () => {
   const getSuggestions = httpsCallable(useFunctions(), 'chattingFunctionality');
-  const [suggestions, setSuggestions] = useState<string[] | null>(['heyy']);
+  const [suggestions, setSuggestions] = useState<string[] | null>(null);
 
   useEffect(() => {
     getSuggestions({
@@ -291,7 +291,7 @@ const Suggestions = () => {
         <Suggestion index={1} text={'Loading suggestions'} />
       ) : (
         <div className="space-y-1">
-          {['heyy'].slice(0, 4).map((text, i) => {
+          {suggestions.slice(0, 4).map((text, i) => {
             return <Suggestion key={i} text={text} index={i} />;
           })}
         </div>
